@@ -1,0 +1,12 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: cert-manager
+  namespace: cert-manager
+config:
+  repository: https://charts.jetstack.io
+  chart: cert-manager
+  version: v1.17.1
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

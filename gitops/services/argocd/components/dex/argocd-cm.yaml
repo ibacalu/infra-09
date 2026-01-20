@@ -1,0 +1,45 @@
+- op: add
+  path: "/data/admin.enabled"
+  value: 'true'
+
+- op: add
+  path: "/data/statusbadge.enabled"
+  value: 'true'
+
+- op: add
+  path: "/data/users.anonymous.enabled"
+  value: 'false'
+
+- op: add
+  path: "/data/accounts.image-updater"
+  value: 'apiKey'
+
+- op: add
+  path: "/data/accounts.image-updater.enabled"
+  value: 'true'
+
+- op: add
+  path: "/data/url"
+  value: https://cd.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+
+- op: add
+  path: "/data/dex.config"
+  value: |
+    connectors:
+      # GitHub example
+      - type: github
+        id: github
+        name: GitHub
+        config:
+          clientID: $dex-config:clientID
+          clientSecret: $dex-config:clientSecret
+          redirectURI: https://127.0.0.1:5556/api/dex/callback
+          orgs:
+          - name: $(secret:argocd/github-org-credentials#organisation)
+    # Setting staticClients allows Argo Workflows to use Argo CD's Dex installation for authentication
+    staticClients:
+      - id: $(secret:argocd/argo-workflows-sso#clientID)
+        name: Argo Workflow
+        redirectURIs:
+          - https://workflows.$(configmap:argocd/cluster-config#clusterDNSZoneName)/oauth2/callback
+        secretEnv: ARGO_WORKFLOWS_SSO_CLIENT_SECRET

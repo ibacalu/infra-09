@@ -1,0 +1,17 @@
+- op: add
+  path: /data/resource.customizations.ignoreDifferences.admissionregistration.k8s.io_MutatingWebhookConfiguration
+  value: |
+    jqPathExpressions:
+    - '.webhooks[]?.clientConfig.caBundle'
+
+- op: add
+  path: /data/resource.customizations.ignoreDifferences.admissionregistration.k8s.io_CustomResourceDefinition
+  value: |
+    jqPathExpressions:
+    - '.spec.conversion.webhook.clientConfig.caBundle'
+
+- op: add
+  path: /data/resource.customizations.ignoreDifferences.apiextensions.k8s.io_CustomResourceDefinition
+  value: |
+    jsonPointers:
+    - /spec/preserveUnknownFields

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+LOGFILE="/tmp/${ARGOCD_APP_NAME:-undefined}.qts.discover.log"
+truncate -s 0 "$LOGFILE"
+
+# Log some information
+{ date; pwd; ls -lah; } >> "$LOGFILE"
+
+required_files=( )
+avoided_files=( ".organisation" )
+
+for i in "${avoided_files[@]}"; do
+  if [ -f "$i" ]; then
+    echo "WARN: $i is avoided" >> "$LOGFILE"
+    echo "WARN: Application '${ARGOCD_APP_NAME}' does not use qts plugin. Sent logs to ${LOGFILE}"
+    exit 1
+  fi
+done
+
+for i in "${required_files[@]}"; do
+  if [ ! -f "$i" ]; then
+    echo "WARN: $i is required" >> "$LOGFILE"
+    echo "WARN: Application '${ARGOCD_APP_NAME}' does not use qts plugin. Sent logs to ${LOGFILE}"
+    exit 1
+  fi
+done
+
+echo "INFO: Application '${ARGOCD_APP_NAME}' uses qts plugin." >> "$LOGFILE"
+echo "INFO: Completed"
+exit 0

@@ -1,0 +1,52 @@
+- op: add
+  path: "/spec/template/spec/containers/-"
+  value:
+    name: qts-plugin
+    command: [/var/run/argocd/argocd-cmp-server]
+    args: [--loglevel, debug]
+    image: ibacalu/argocd:1.0.6
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+    volumeMounts:
+      - mountPath: /var/run/argocd
+        name: var-files
+      - mountPath: /home/argocd/cmp-server/plugins
+        name: plugins
+      - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+        subPath: plugin.yaml
+        name: qts
+      - mountPath: /var/run/argocd/scripts/render.sh
+        subPath: render.sh
+        name: qts
+      - mountPath: /var/run/argocd/scripts/discover.sh
+        subPath: discover.sh
+        name: qts
+      - mountPath: /tmp
+        name: local-tmp
+    env:
+      - name: VAULT_ADDR
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: vault_addr
+            optional: true
+      - name: VAULT_AUTH_BACKEND
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: vault_auth_backend
+            optional: true
+      - name: VAULT_SECRET_BACKEND
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: vault_secret_backend
+            optional: true
+  
+- op: add
+  path: "/spec/template/spec/volumes/-"
+  value:
+    name: qts
+    configMap:
+      name: qts

@@ -1,0 +1,25 @@
+kind: Project
+apiVersion: qts.one/v1beta1
+metadata:
+  name: security
+  annotations:
+    argocd.argoproj.io/sync-wave: "-90"
+spec:
+  appProject:
+    description: security
+    sourceRepos:
+      - "*"
+    destinations:
+      - namespace: "*"
+        server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: "*"
+        kind: "*"
+    namespaceResourceWhitelist:
+      - group: "*"
+        kind: "*"
+  applications:
+    - name: cert-manager
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/cert-manager/environments

@@ -1,0 +1,35 @@
+kind: Project
+apiVersion: qts.one/v1beta1
+metadata:
+  name: networking
+spec:
+  appProject:
+    description: networking
+    sourceRepos:
+      - "*"
+    destinations:
+      - namespace: "*"
+        server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: "*"
+        kind: "*"
+    namespaceResourceWhitelist:
+      - group: "*"
+        kind: "*"
+  applications:
+    - name: external-dns
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/external-dns/environments
+    - name: ingress-nginx
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/ingress-nginx/environments
+    - name: traefik
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/traefik/environments
+    - name: cloudflared
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/cloudflared/environments

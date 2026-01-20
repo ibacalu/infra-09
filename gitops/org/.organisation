@@ -1,0 +1,11 @@
+overlays_path: gitops/environments
+environment: {}
+ignoreDifferences: []
+syncPolicy:
+  automated:
+    selfHeal: true
+    prune: false
+  syncOptions:
+    - CreateNamespace=true
+    - ApplyOutOfSyncOnly=true
+    - RespectIgnoreDifferences=true

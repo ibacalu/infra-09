@@ -1,0 +1,11 @@
+[
+  {
+    "op": "add",
+    "path": "/imagePullSecrets",
+    "value": [
+      {
+        "name": "ghcr-secret"
+      }
+    ]
+  }
+]

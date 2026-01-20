@@ -1,0 +1,12 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: traefik
+  namespace: traefik
+config:
+  repository: oci://ghcr.io/traefik/helm
+  chart: traefik
+  version: 35.2.0
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

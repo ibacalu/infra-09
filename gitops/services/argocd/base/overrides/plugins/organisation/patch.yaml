@@ -1,0 +1,40 @@
+- op: add
+  path: "/spec/template/spec/containers/-"
+  value:
+    name: organisation-plugin
+    command: [/var/run/argocd/argocd-cmp-server]
+    args: [--loglevel, debug]
+    image: ibacalu/argocd:1.0.6
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 999
+    volumeMounts:
+      - mountPath: /var/run/argocd
+        name: var-files
+      - mountPath: /home/argocd/cmp-server/plugins
+        name: plugins
+      - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+        subPath: plugin.yaml
+        name: organisation
+      - mountPath: /var/run/argocd/scripts/render.py
+        subPath: render.py
+        name: organisation
+      - mountPath: /var/run/argocd/scripts/discover.sh
+        subPath: discover.sh
+        name: organisation
+      - mountPath: /tmp
+        name: local-tmp
+    env:
+      - name: CLUSTER_NAME
+        valueFrom:
+          configMapKeyRef:
+            name: cluster-config
+            key: cluster_name
+            optional: true
+
+- op: add
+  path: "/spec/template/spec/volumes/-"
+  value:
+    name: organisation
+    configMap:
+      name: organisation

@@ -1,0 +1,12 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: dagster
+  namespace: dagster
+config:
+  repository: https://dagster-io.github.io/helm
+  chart: dagster
+  version: 1.6.0
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

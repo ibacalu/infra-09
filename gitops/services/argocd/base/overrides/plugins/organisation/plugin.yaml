@@ -1,0 +1,13 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ConfigManagementPlugin
+metadata:
+  name: organisation
+spec:
+  version: v1.0
+  init:
+    command: [pip3, install, pyyaml]
+  generate:
+    command: [python3, /var/run/argocd/scripts/render.py]
+  discover:
+    find:
+      command: [bash, /var/run/argocd/scripts/discover.sh]

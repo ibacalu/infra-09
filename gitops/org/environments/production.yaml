@@ -1,0 +1,16 @@
+kind: Environment
+apiVersion: qts.one/v1beta1
+metadata:
+  name: production
+spec:
+  clusters:
+    - name: production
+      applications:
+        # Services
+        - name: argocd
+        - name: cert-manager
+        - name: external-dns
+        - name: ingress-nginx
+        - name: traefik
+        # Apps
+        - name: whoami

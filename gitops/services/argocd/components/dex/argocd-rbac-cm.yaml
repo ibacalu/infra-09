@@ -1,0 +1,59 @@
+
+- op: add
+  path: /data
+  value: {}
+
+# policy.csv is an file containing user-defined RBAC policies and role definitions (optional).
+# Policy rules are in the form:
+#   p, subject, resource, action, object, effect
+# Role definitions and bindings are in the form:
+#   g, subject, inherited-subject
+# See https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/rbac.md for additional information.
+- op: add
+  path: /data/policy.csv
+  value: |
+    p, role:org-admin, applications, *, */*, allow
+    p, role:org-admin, clusters, get, *, allow
+    p, role:org-admin, repositories, get, *, allow
+    p, role:org-admin, repositories, create, *, allow
+    p, role:org-admin, repositories, update, *, allow
+    p, role:org-admin, repositories, delete, *, allow
+    p, role:org-admin, logs, get, *, allow
+    p, role:org-admin, exec, create, */*, allow
+
+    p, role:developer, applications, create, test/*, allow
+    p, role:developer, applications, get, test/*, allow
+    # p, role:developer, applications, update, test/*, allow
+    p, role:developer, applications, delete, test/*, allow
+    # p, role:developer, applications, override, test/*, allow
+    p, role:developer, applications, sync, test/*, allow
+    p, role:developer, clusters, get, *, allow
+    p, role:developer, repositories, get, *, allow
+    p, role:developer, repositories, create, *, allow
+    p, role:developer, repositories, update, *, allow
+    p, role:developer, repositories, delete, *, allow
+    p, role:developer, logs, get, *, allow
+    p, role:developer, exec, create, app/*, allow
+
+    g, $(secret:argocd/github-org-credentials#organisation):Owners, role:admin
+
+# policy.default is the name of the default role which Argo CD will falls back to, when
+# authorizing API requests (optional). If omitted or empty, users may be still be able to login,
+# but will see no apps, projects, etc...
+# policy.default: role:readonly
+- op: add
+  path: "/data/policy.default"
+  value: 'role:readonly'
+
+# scopes controls which OIDC scopes to examine during rbac enforcement (in addition to `sub` scope).
+# If omitted, defaults to: '[groups]'. The scope value can be a string, or a list of strings.
+- op: add
+  path: "/data/scopes"
+  value: '[username, email, groups]'
+
+# matchMode configures the matchers function for casbin.
+# There are two options for this, 'glob' for glob matcher or 'regex' for regex matcher. If omitted or mis-configured,
+# will be set to 'glob' as default.
+- op: add
+  path: "/data/policy.matchMode"
+  value: 'glob'

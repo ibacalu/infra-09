@@ -1,0 +1,10 @@
+apiVersion: v2
+name: podinfo
+description: Umbrella Chart
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+dependencies:
+- repository: oci://ghcr.io/stefanprodan/charts
+  name: podinfo
+  version: 6.7.1

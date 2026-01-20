@@ -1,0 +1,12 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: cloudnative-pg
+  namespace: cnpg-system
+config:
+  repository: oci://ghcr.io/cloudnative-pg/charts
+  chart: cloudnative-pg
+  version: 0.23.2
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

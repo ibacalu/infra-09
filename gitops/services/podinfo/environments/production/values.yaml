@@ -1,0 +1,13 @@
+podinfo:
+  replicaCount: 1
+  logLevel: info
+
+  ingress:
+    className: nginx-ingress
+
+  resources:
+    limits:
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi

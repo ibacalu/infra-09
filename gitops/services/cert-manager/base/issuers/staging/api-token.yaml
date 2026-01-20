@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: letsencrypt-staging-api-token
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+data:
+  token: $(secret:argocd/cert-manager#staging_token|b64enc)

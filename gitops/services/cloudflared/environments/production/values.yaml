@@ -1,0 +1,2 @@
+cloudflare:
+  ingress: $(secret:argocd/cloudflared-tunnel#ingress|yaml)

@@ -1,0 +1,38 @@
+# Default values for dagster.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+dagit:
+  enableReadOnly: true
+
+postgresql:
+  enabled: false # We use external RDS
+  postgresqlHost: "REPLACE_WITH_RDS_ENDPOINT"
+  postgresqlUsername: "dagster"
+  postgresqlDatabase: "dagster"
+  # Password will be injected via Secrets/Env variables
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  paths:
+    - path: /
+      pathType: Prefix
+      backend:
+        service:
+          name: dagster-dagit
+          port:
+            number: 80
+
+dagster-user-deployments:
+  enabled: true
+  deployments:
+    - name: "user-code"
+      image:
+        repository: "ghcr.io/ibacalu/infra-09/user-code"
+        tag: "main" # In prod, use specific tag or GitOps update
+        pullPolicy: Always
+      dagsterApiGrpcArgs:
+        - "-f"
+        - "/opt/dagster/app/repo.py"

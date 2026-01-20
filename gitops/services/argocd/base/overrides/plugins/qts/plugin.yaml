@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ConfigManagementPlugin
+metadata:
+  name: qts
+spec:
+  version: v1.0
+  init:
+    command: [bash, /var/run/argocd/scripts/render.sh]
+  generate:
+    command: [bash, -c]
+    args:
+      - |
+        cat render.yaml
+  discover:
+    find:
+      command: [bash, /var/run/argocd/scripts/discover.sh]

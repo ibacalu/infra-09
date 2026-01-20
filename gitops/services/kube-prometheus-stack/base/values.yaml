@@ -1,0 +1,131 @@
+prometheusOperator:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+  admissionWebhooks:
+    certManager:
+      enabled: true
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 400Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: "$(configmap:argocd/cluster-config#cluster-issuer)"
+    hosts:
+      - alertmanager.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+    tls:
+      - secretName: alertmanager-tls
+        hosts:
+          - alertmanager.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+kubelet:
+  serviceMonitor:
+    additionalLabels:
+      cluster: $(configmap:argocd/cluster-config#cluster_name)
+
+prometheus:
+  prometheusSpec:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 400Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+    externalLabels:
+      cluster: "$(configmap:argocd/cluster-config#cluster_name)"
+    
+    # additionalScrapeConfigs:
+    #   - job_name: 'default-kubernetes-pods'
+    #     kubernetes_sd_configs:
+    #       - role: pod
+    #     relabel_configs:
+    #       - target_label: cluster
+    #         replacement: "$(configmap:argocd/cluster-config#cluster_name)"
+
+    #   - job_name: 'default-kubernetes-nodes'
+    #     kubernetes_sd_configs:
+    #       - role: node
+    #     relabel_configs:
+    #       - target_label: cluster
+    #         replacement: "$(configmap:argocd/cluster-config#cluster_name)"
+    
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: "$(configmap:argocd/cluster-config#cluster-issuer)"
+    hosts:
+      - prometheus.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+    tls:
+      - secretName: prometheus-tls
+        hosts:
+          - prometheus.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+
+thanosRuler:
+  thanosRulerSpec:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 400Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+coreDns:
+  enabled: true
+
+  service:
+    enabled: true
+    port: 9153
+    targetPort: 9153
+
+    ipDualStack:
+      enabled: false
+    
+  serviceMonitor:
+    port: metrics
+    selector:
+      matchLabels:
+        k8s-app: kube-dns
+
+grafana:
+  enabled: true
+  adminUser: admin
+  adminPassword: secretPassword
+  defaultDashboardsTimezone: Europe/Berlin
+  persistence:
+    enabled: true
+    type: sts
+    size: 10Gi
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: "$(configmap:argocd/cluster-config#cluster-issuer)"
+    hosts:
+      - grafana.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+
+nodeExporter:
+  enabled: true
+  operatingSystems:
+    linux:
+      enabled: true
+    aix:
+      enabled: false
+    darwin:
+      enabled: false

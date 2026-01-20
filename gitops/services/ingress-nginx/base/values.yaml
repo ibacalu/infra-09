@@ -1,0 +1,27 @@
+#? nginx configuration
+#? Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/nginx-configuration/index.md
+#? Controller Configuration
+controller:
+  nodeSelector: {}
+  ingressClassResource:
+    name: nginx
+    default: true
+    controllerValue: "k8s.io/ingress-nginx"
+  ingressClass: nginx
+  admissionWebhooks:
+      enabled: true
+  resources:
+    requests:
+      cpu: "0.2"
+      memory: 0.5Gi
+    limits:
+      memory: 1Gi
+  replicaCount: 1
+  service:
+    type: LoadBalancer
+    externalTrafficPolicy: Local
+    annotations:
+      #? (Required) External-DNS Configuration
+      # # external-dns.alpha.kubernetes.io/aws-weight: "100"
+      # external-dns.alpha.kubernetes.io/set-identifier: "$(configmap:argocd/cluster-config#cluster_name)"
+      # external-dns.alpha.kubernetes.io/hostname: "ingress-nginx.$(configmap:argocd/cluster-config#clusterDNSZoneName)"

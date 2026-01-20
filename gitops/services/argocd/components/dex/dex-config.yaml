@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: dex-config
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-secret
+    app.kubernetes.io/part-of: argocd
+data:
+  clientID: $(secret:argocd/dex-sso#clientID|b64enc)
+  clientSecret: $(secret:argocd/dex-sso#clientSecret|b64enc)

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: cloudflare-auth
+data:
+  apiToken: $(secret:argocd/external-dns-cloudflare#token|b64enc)

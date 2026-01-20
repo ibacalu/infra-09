@@ -1,0 +1,11 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: kube-prometheus-stack
+config:
+  repository: oci://ghcr.io/prometheus-community/charts
+  chart: kube-prometheus-stack
+  version: 70.4.2
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

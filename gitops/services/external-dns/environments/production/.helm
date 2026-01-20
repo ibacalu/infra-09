@@ -1,0 +1,12 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: external-dns
+  namespace: external-dns
+config:
+  repository: https://kubernetes-sigs.github.io/external-dns
+  chart: external-dns
+  version: 1.16.1
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

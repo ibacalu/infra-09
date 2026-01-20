@@ -1,0 +1,16 @@
+[
+  {
+    "op": "add",
+    "path": "/secrets",
+    "value": [
+      {
+        "name": "argocd-sa-token"
+      }
+    ]
+  },
+  {
+    "op": "add",
+    "path": "/automountServiceAccountToken",
+    "value": true
+  }
+]

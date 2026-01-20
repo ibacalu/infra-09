@@ -1,0 +1,38 @@
+kind: Project
+apiVersion: qts.one/v1beta1
+metadata:
+  name: data
+  annotations:
+    argocd.argoproj.io/sync-wave: "-100"
+spec:
+  appProject:
+    description: Data and Storage
+    sourceRepos:
+      - "*"
+    destinations:
+      - namespace: "*"
+        server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+      - group: "*"
+        kind: "*"
+    namespaceResourceWhitelist:
+      - group: "*"
+        kind: "*"
+  applications:
+    - name: cloudnative-pg
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/cloudnative-pg/environments
+      namespace: cnpg-system
+      ignoreDifferences:
+        - group: admissionregistration.k8s.io
+          kind: ValidatingWebhookConfiguration
+          name: cnpg-validating-webhook-configuration
+          jqPathExpressions:
+            - .webhooks[]?.clientConfig.caBundle
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - RespectIgnoreDifferences=true
+          - ServerSideApply=true

@@ -11,6 +11,11 @@ output "organization_arn" {
   value       = module.aws_organization.organization_arn
 }
 
+output "management_account_id" {
+  description = "Management account ID"
+  value       = module.aws_organization.management_account_id
+}
+
 output "security_account_id" {
   description = "Security account ID"
   value       = module.aws_organization.security_account_id

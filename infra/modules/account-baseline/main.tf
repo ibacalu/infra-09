@@ -17,11 +17,6 @@ resource "aws_iam_role" "terraform_execution_role" {
         Principal = {
           AWS = var.management_account_id != null ? "arn:aws:iam::${var.management_account_id}:root" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
         }
-        Condition = {
-          StringEquals = {
-            "sts:ExternalId" = var.project_name
-          }
-        }
       }
     ]
   })

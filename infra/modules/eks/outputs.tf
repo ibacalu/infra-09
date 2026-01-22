@@ -157,15 +157,6 @@ output "irsa" {
   value = module.irsa
 }
 
-output "test" {
-  value = {
-    argocd = try(module.argocd.0.test, null)
-  }
-}
 
-output "argocd" {
-  value     = module.argocd
-  sensitive = true
-}
 
 

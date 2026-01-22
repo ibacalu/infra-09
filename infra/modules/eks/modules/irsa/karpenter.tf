@@ -218,8 +218,8 @@ resource "aws_sqs_queue_policy" "this" {
 resource "aws_cloudwatch_event_rule" "this" {
   for_each = local.events
 
-  name          = local.irsa_name
-  description   = "${local.irsa_name} Karpenter rule"
+  name          = "${local.irsa_name}-${replace(each.key, "_", "-")}"
+  description   = "${local.irsa_name} Karpenter rule - ${each.value.name}"
   event_pattern = jsonencode(each.value.event_pattern)
 
   tags = local.tags

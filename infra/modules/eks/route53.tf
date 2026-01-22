@@ -1,6 +1,6 @@
 locals {
   sanitized_cluster_name = replace(lower(var.eks.cluster_name), "_", "-")
-  route53_cluster_domain = "${local.sanitized_cluster_name}.${data.aws_route53_zone.root.name}"
+  route53_cluster_domain = "${local.sanitized_cluster_name}.${local.root_route53_zone_name}"
 }
 
 resource "aws_route53_zone" "cluster" {
@@ -16,7 +16,7 @@ resource "aws_route53_zone" "cluster" {
 }
 
 resource "aws_route53_record" "delegation" {
-  zone_id = data.aws_route53_zone.root.zone_id
+  zone_id = local.root_route53_zone_id
   name    = local.route53_cluster_domain
   type    = "NS"
   ttl     = 300

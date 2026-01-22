@@ -147,12 +147,7 @@ module "irsa" {
   config = local.irsa
 }
 
-module "argocd" {
-  source = "git::https://github.com/qtsone/terraform-k8s-argocd.git?ref=v1.0.0"
 
-  config            = local.argocd_config
-  module_depends_on = [module.eks, module.irsa]
-}
 
 # Karpenter node access entry - created separately to avoid circular dependency
 # This allows Karpenter-launched nodes to join the cluster

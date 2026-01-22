@@ -63,7 +63,7 @@ data "aws_iam_policy_document" "karpenter_assume" {
     condition {
       test     = "StringEquals"
       variable = "${local.cluster_oidc_issuer_url}:sub"
-      values   = ["system:serviceaccount:kube-system:karpenter"]
+      values   = ["system:serviceaccount:karpenter:karpenter"]
     }
 
     condition {

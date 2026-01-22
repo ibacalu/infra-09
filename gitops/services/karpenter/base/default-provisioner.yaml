@@ -1,4 +1,4 @@
-apiVersion: karpenter.sh/v1
+apiVersion: karpenter.k8s.aws/v1
 kind: EC2NodeClass
 metadata:
   name: default
@@ -15,7 +15,6 @@ spec:
     Name: karpenter-node
     Organization: "ibacalu"
     Environment: "$(configmap:argocd/cluster-config#environment)"
-
 ---
 apiVersion: karpenter.sh/v1
 kind: NodePool
@@ -25,7 +24,7 @@ spec:
   template:
     spec:
       nodeClassRef:
-        group: karpenter.sh
+        group: karpenter.k8s.aws
         kind: EC2NodeClass
         name: default
       requirements:

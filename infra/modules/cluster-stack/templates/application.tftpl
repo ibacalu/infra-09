@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ${organisation.name}
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-90"
+spec:
+  project: organisation
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  source:
+    path: ${organisation.repo_path}
+    repoURL: ${organisation.repo_url}
+    targetRevision: ${organisation.branch}
+    plugin:
+      env:
+        - name: ENVIRONMENT
+          value: ${organisation.environment}
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: false
+    retry:
+      limit: 2
+      backoff:
+        duration: "5s"
+        factor: 2
+        maxDuration: "3m0s"

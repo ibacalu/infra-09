@@ -4,7 +4,7 @@ metadata:
   name: production
 spec:
   clusters:
-    - name: production
+    - name: platform-main-01
       applications:
         # Services
         - name: argocd

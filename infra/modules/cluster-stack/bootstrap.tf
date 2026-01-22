@@ -6,6 +6,21 @@
 # to EKS using IAM (via Access Entries).
 ################################################################################
 
+locals {
+  argocd_project_manifest = templatefile("${path.module}/templates/project.tftpl", {})
+
+  argocd_application_manifest = templatefile("${path.module}/templates/application.tftpl", {
+    organisation = {
+      # Use "bootstrap" as the name to distinguish from potentially other "organisation" apps
+      name        = "bootstrap"
+      repo_url    = var.argocd_config.repo_url
+      repo_path   = "gitops/services/argocd/base/overrides/plugins/organisation"
+      branch      = "HEAD"
+      environment = var.environment
+    }
+  })
+}
+
 module "bootstrap_lambda" {
   source = "../cluster-bootstrap-lambda"
 
@@ -54,10 +69,13 @@ resource "aws_lambda_invocation" "bootstrap" {
       for id in data.kustomization_overlay.argocd.ids_prio[1] :
       data.kustomization_overlay.argocd.manifests[id]
     ]
-    argocd_manifests_p2 = [
+    argocd_manifests_p2 = concat([
       for id in data.kustomization_overlay.argocd.ids_prio[2] :
       data.kustomization_overlay.argocd.manifests[id]
-    ]
+      ], [
+      local.argocd_project_manifest,
+      local.argocd_application_manifest
+    ])
 
     # ArgoCD bootstrap application config
     argocd_config = var.argocd_config
@@ -68,10 +86,12 @@ resource "aws_lambda_invocation" "bootstrap" {
 
   # Re-invoke if cluster or config changes
   triggers = {
-    cluster_endpoint      = module.eks.cluster_endpoint
-    config_hash           = sha256(jsonencode(local.cluster_config_data))
-    argocd_hash           = sha256(jsonencode(var.argocd_config))
-    argocd_manifests_hash = sha256(jsonencode(data.kustomization_overlay.argocd.ids))
+    cluster_endpoint        = module.eks.cluster_endpoint
+    config_hash             = sha256(jsonencode(local.cluster_config_data))
+    argocd_hash             = sha256(jsonencode(var.argocd_config))
+    argocd_manifests_hash   = sha256(jsonencode(data.kustomization_overlay.argocd.ids))
+    argocd_project_hash     = sha256(local.argocd_project_manifest)
+    argocd_application_hash = sha256(local.argocd_application_manifest)
   }
 
   depends_on = [

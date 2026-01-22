@@ -9,7 +9,6 @@ resources:
 components:
   - overrides/argocd-repo-server
   - overrides/plugins
-  - overrides/ghcr-secret
 
 images:
   - name: quay.io/argoproj/argocd

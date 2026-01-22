@@ -6,3 +6,5 @@
 # Other
 data/
 .envrc
+infra/modules/cluster-bootstrap-lambda/package/
+infra/modules/cluster-bootstrap-lambda/.build/

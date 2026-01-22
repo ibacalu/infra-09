@@ -1,0 +1,12 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: external-secrets
+  namespace: external-secrets
+config:
+  repository: https://charts.external-secrets.io
+  chart: external-secrets
+  version: 0.10.5
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

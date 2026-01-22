@@ -23,6 +23,7 @@ locals {
     aws_ebs_csi_driver_iam_role_arn  = module.irsa.aws_ebs_csi_driver_iam_role_arn
     aws_load_balancer_controller_arn = module.irsa.aws_load_balancer_controller_arn
     autoscaler_iam_role_arn          = module.irsa.autoscaler_iam_role_arn
+    external_secrets_iam_role_arn    = module.irsa.external_secrets_iam_role_arn
 
     # DNS
     rootDNSZoneName    = var.root_route53_zone_name

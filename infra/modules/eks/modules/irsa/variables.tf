@@ -11,5 +11,8 @@ variable "config" {
     cluster_oidc_issuer_url = string,
 
     route53_zone_ids = list(string),
+
+    # Feature flags
+    enable_external_secrets = optional(bool, false)
   })
 }

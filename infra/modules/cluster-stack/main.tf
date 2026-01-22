@@ -125,6 +125,7 @@ module "irsa" {
     enable_cert_manager             = true
     enable_aws_ebs_csi_driver       = true
     enable_load_balancer_controller = true
+    enable_external_secrets         = true
   }
 }
 

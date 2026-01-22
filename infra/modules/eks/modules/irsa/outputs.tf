@@ -25,3 +25,7 @@ output "karpenter_iam_role_arn" {
 output "karpenter_node_iam_role_arn" {
   value = aws_iam_role.this.arn
 }
+
+output "external_secrets_iam_role_arn" {
+  value = one(aws_iam_role.external_secrets[*].arn)
+}

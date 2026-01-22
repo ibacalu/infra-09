@@ -19,6 +19,10 @@ spec:
       - group: "*"
         kind: "*"
   applications:
+    - name: external-secrets
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/external-secrets/environments
     - name: cert-manager
       repoURL: https://github.com/ibacalu/infra-09.git
       targetRevision: main

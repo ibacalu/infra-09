@@ -19,6 +19,10 @@ spec:
       - group: "*"
         kind: "*"
   applications:
+    - name: karpenter
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/karpenter/environments
     - name: cloudnative-pg
       repoURL: https://github.com/ibacalu/infra-09.git
       targetRevision: main

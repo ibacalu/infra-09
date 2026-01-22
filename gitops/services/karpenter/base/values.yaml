@@ -1,0 +1,25 @@
+# karpenter/base/values.yaml
+
+serviceAccount:
+  create: true
+  name: "karpenter"
+  annotations:
+    eks.amazonaws.com/role-arn: $(configmap:argocd/cluster-config#karpenter_iam_role_arn)
+
+settings:
+  clusterName: $(configmap:argocd/cluster-config#cluster_name)
+  interruptionQueue: $(configmap:argocd/cluster-config#cluster_name)-karpenter
+
+controller:
+  resources:
+    requests:
+      cpu: 1
+      memory: 1Gi
+    limits:
+      cpu: 1
+      memory: 1Gi
+
+# Tolerations to allow running on system nodes if needed
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists

@@ -1,0 +1,12 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: karpenter
+  namespace: karpenter
+config:
+  repository: oci://public.ecr.aws/karpenter
+  chart: karpenter
+  version: 1.1.1
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

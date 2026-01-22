@@ -4,6 +4,8 @@ metadata:
   name: default
 spec:
   amiFamily: Bottlerocket
+  amiSelectorTerms:
+    - alias: bottlerocket@latest
   role: "$(configmap:argocd/cluster-config#cluster_name)-karpenter-node"
   subnetSelectorTerms:
     - tags:

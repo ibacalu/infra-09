@@ -77,7 +77,7 @@ locals {
     for key, cluster in local.clusters : key => merge(cluster, {
       name            = "${var.project_name}-${key}"
       project_name    = try(cluster.project_name, var.project_name)
-      environment     = try(cluster.environment, local.common_tags.Environment)
+      environment     = lower(try(cluster.environment, local.common_tags.Environment))
       region          = try(cluster.region, var.aws_region)
       secrets_prefix  = try(cluster.secrets_prefix, "eks/${var.project_name}-${key}/argocd/")
       cluster_version = try(cluster.cluster_version, "1.31")

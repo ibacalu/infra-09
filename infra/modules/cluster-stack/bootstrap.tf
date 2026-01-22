@@ -12,11 +12,11 @@ locals {
   argocd_application_manifest = templatefile("${path.module}/templates/application.tftpl", {
     organisation = {
       # Use "bootstrap" as the name to distinguish from potentially other "organisation" apps
-      name        = "bootstrap"
       repo_url    = var.argocd_config.repo_url
-      repo_path   = "gitops/services/argocd/base/overrides/plugins/organisation"
-      branch      = "HEAD"
       environment = var.environment
+      name        = "infra-09"
+      repo_path   = "gitops/org"
+      branch      = "HEAD"
     }
   })
 }
@@ -77,10 +77,7 @@ resource "aws_lambda_invocation" "bootstrap" {
       local.argocd_application_manifest
     ])
 
-    # ArgoCD bootstrap application config
-    argocd_config = var.argocd_config
-
-    # Cluster config for ConfigMap
+    # Cluster config forConfigMap
     cluster_config = local.cluster_config_data
   })
 
@@ -88,7 +85,6 @@ resource "aws_lambda_invocation" "bootstrap" {
   triggers = {
     cluster_endpoint        = module.eks.cluster_endpoint
     config_hash             = sha256(jsonencode(local.cluster_config_data))
-    argocd_hash             = sha256(jsonencode(var.argocd_config))
     argocd_manifests_hash   = sha256(jsonencode(data.kustomization_overlay.argocd.ids))
     argocd_project_hash     = sha256(local.argocd_project_manifest)
     argocd_application_hash = sha256(local.argocd_application_manifest)

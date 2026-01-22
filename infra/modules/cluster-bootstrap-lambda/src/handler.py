@@ -225,7 +225,21 @@ def apply_manifest(api_client: ApiClient, manifest: dict) -> bool:
 
     try:
         # Get the API resource
-        api = dyn_client.resources.get(api_version=api_version, kind=kind)
+        api = None
+        # Retry discovery for CRDs that might have just been applied
+        for i in range(6):
+            try:
+                api = dyn_client.resources.get(api_version=api_version, kind=kind)
+                break
+            except Exception as e:
+                # If resource/kind not found, wait and retry
+                if i == 5:
+                    logger.warning(f"Resource {kind} ({api_version}) not found after retries: {e}")
+                    raise
+                logger.info(f"Waiting for {kind} CRD to be ready... ({i+1}/6)")
+                time.sleep(5)
+                # Re-initialize client to refresh discovery cache
+                dyn_client = dynamic.DynamicClient(api_client)
 
         try:
             if namespace:
@@ -333,50 +347,6 @@ def apply_argocd_manifests(
     return total_fail == 0
 
 
-def create_argocd_application(api_client: ApiClient, config: dict) -> bool:
-    """Create the bootstrap ArgoCD Application with retry."""
-    manifest = {
-        "apiVersion": "argoproj.io/v1alpha1",
-        "kind": "Application",
-        "metadata": {"name": "bootstrap", "namespace": "argocd"},
-        "spec": {
-            "project": "default",
-            "source": {
-                "repoURL": config["repo_url"],
-                "targetRevision": config["branch"],
-                "path": config["repo_path"],
-                "helm": {"valueFiles": [f"environments/{config['environment']}.yaml"]},
-            },
-            "destination": {
-                "server": "https://kubernetes.default.svc",
-                "namespace": "argocd",
-            },
-            "syncPolicy": {"automated": {"prune": True, "selfHeal": True}},
-        },
-    }
-
-    # Retry loop for CRD availability
-    max_retries = 6
-    retry_delay = 10
-
-    for i in range(max_retries):
-        try:
-            if apply_manifest(api_client, manifest):
-                return True
-        except Exception as e:
-            # Check if error is related to missing CRD
-            error_str = str(e)
-            if "Not Found" in error_str or "404" in error_str:
-                logger.info(
-                    f"ArgoCD Application CRD not ready yet (attempt {i+1}/{max_retries}). Waiting {retry_delay}s..."
-                )
-                time.sleep(retry_delay)
-            else:
-                logger.error(f"Failed to apply bootstrap Application: {e}")
-                return False
-
-    logger.error("Timed out waiting for ArgoCD Application CRD")
-    return False
 
 
 def handler(event: dict, context: Any) -> dict:
@@ -403,7 +373,6 @@ def handler(event: dict, context: Any) -> dict:
     argocd_manifests_p0 = event.get("argocd_manifests_p0", [])
     argocd_manifests_p1 = event.get("argocd_manifests_p1", [])
     argocd_manifests_p2 = event.get("argocd_manifests_p2", [])
-    argocd_config = event.get("argocd_config", {})
     cluster_config = event.get("cluster_config", {})
 
     # Get cluster info and authenticate
@@ -466,13 +435,6 @@ def handler(event: dict, context: Any) -> dict:
             if create_configmap(api_client, "cluster-config", "argocd", cluster_config):
                 results["steps"].append({"configmap_cluster_config": "created"})
 
-        # Step 5: Create bootstrap Application (after ArgoCD CRDs are ready)
-        if argocd_config:
-            logger.info("Creating bootstrap Application")
-            # Note: This may fail initially if ArgoCD CRDs aren't ready yet
-            # A retry mechanism could be added here
-            if create_argocd_application(api_client, argocd_config):
-                results["steps"].append({"bootstrap_app": "created"})
 
         logger.info(f"Bootstrap completed: {results}")
         return results

@@ -1,7 +1,11 @@
 locals {
   # Do we use InternalIngress?
-  internalIngressEnabled = var.config.internal_route53_zone != null ? true : false
-  externalIngressEnabled = var.config.external_route53_zone != null ? true : false
+  internalIngressEnabled = var.config.internal_route53_zone_id != null ? true : false
+  externalIngressEnabled = var.config.external_route53_zone_id != null ? true : false
+
+  # Helper locals - use passed values directly for plan-time resolution
+  root_route53_zone_id   = var.config.root_route53_zone_id
+  root_route53_zone_name = var.config.root_route53_zone_name
 
   # EKS managed node groups (direct passthrough)
   eks_managed_node_groups = var.eks.eks_managed_node_groups
@@ -22,9 +26,9 @@ locals {
       cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
       # TODO: define if we really need both root and cluster zones here
       route53_zone_ids = compact([
-        local.internalIngressEnabled ? data.aws_route53_zone.internal.0.zone_id : "",
-        local.externalIngressEnabled ? data.aws_route53_zone.external.0.zone_id : "",
-        data.aws_route53_zone.root.zone_id,
+        local.internalIngressEnabled ? data.aws_route53_zone.internal[0].zone_id : "",
+        local.externalIngressEnabled ? data.aws_route53_zone.external[0].zone_id : "",
+        local.root_route53_zone_id,
         aws_route53_zone.cluster.zone_id
       ])
     }
@@ -74,8 +78,8 @@ locals {
           autoscaler_iam_role_arn          = module.irsa.autoscaler_iam_role_arn
 
           # DNS zones
-          rootDNSZoneName    = data.aws_route53_zone.root.name
-          rootDNSZoneId      = data.aws_route53_zone.root.zone_id
+          rootDNSZoneName    = local.root_route53_zone_name
+          rootDNSZoneId      = local.root_route53_zone_id
           clusterDNSZoneName = aws_route53_zone.cluster.name
           clusterDNSZoneId   = aws_route53_zone.cluster.zone_id
           clusterDNSZoneCert = aws_acm_certificate.cluster.arn
@@ -88,22 +92,13 @@ locals {
       }
     ]
 
+    # Generate secrets from var.config.secrets input
     secrets = [
-      {
-        name      = "github-org-credentials"
-        namespace = "argocd"
-        labels = {
-          "argocd.argoproj.io/secret-type" = "repo-creds"
-          "app.kubernetes.io/name"         = "github-org-credentials"
-        }
-        stringData = {
-          type                    = "github"
-          url                     = "${local.github_app.server_url}/${local.github_app.organisation}"
-          organisation            = local.github_app.organisation
-          githubAppID             = local.github_app.id
-          githubAppInstallationID = local.github_app.installation_id
-          githubAppPrivateKey     = data.aws_secretsmanager_secret_version.github_app_private_key.secret_string
-        }
+      for name, data in var.config.secrets : {
+        name       = name
+        namespace  = "argocd"
+        labels     = lookup(data, "_labels", null) != null ? jsondecode(data["_labels"]) : {}
+        stringData = { for k, v in data : k => v if !startswith(k, "_") }
       }
     ]
   }

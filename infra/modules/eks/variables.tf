@@ -6,16 +6,19 @@ variable "config" {
     # ID of the VPC where the cluster security group will be provisioned
     vpc_id            = string,
     public_subnet_ids = list(string)
-    # A list of subnet IDs where the nodes/node groups will be provisioned. If `eks.control_plane_subnet_ids` is not provided, the EKS cluster control plane (ENIs) will be provisioned in these subnets
+    # A list of subnet IDs where the nodes/node groups will be provisioned
     private_subnet_ids = list(string)
-    # Root DNS Zone Internal
-    internal_route53_zone = optional(string),
-    # Root DNS Zone External
-    external_route53_zone = optional(string),
-    # Root DNS Zone used by Cluster
-    root_route53_zone = string,
-    tags              = optional(map(string), {})
-    letsencrypt_email = string
+    # Route53 Zone ID for internal ingress (optional)
+    internal_route53_zone_id = optional(string),
+    # Route53 Zone ID for external ingress (optional)
+    external_route53_zone_id = optional(string),
+    # Route53 root zone - both name and ID required for plan-time resolution
+    root_route53_zone_name = string
+    root_route53_zone_id   = string
+    tags                   = optional(map(string), {}),
+    letsencrypt_email      = string
+    # Secrets to create in K8s argocd namespace (map of secret_name => data)
+    secrets = optional(map(map(string)), {})
     # IAM role name for Terraform to assume when configuring Kubernetes providers
     terraform_role_name = optional(string, "terraform")
   })
@@ -65,7 +68,7 @@ variable "eks" {
     cluster_service_ipv6_cidr = optional(string, null),
 
     # Configuration for the AWS Outpost to provision the cluster on
-    outpost_config = optional(any, {}),
+    outpost_config = optional(any, null),
 
     # Configuration block with encryption configuration for the cluster
     cluster_encryption_config = optional(any, { "resources" : ["secrets"] }),

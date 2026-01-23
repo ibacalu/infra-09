@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1](https://github.com/ibacalu/infra-09/compare/v1.0.0...v1.0.1) (2026-01-23)
+
+
+### Bug Fixes
+
+* **karpenter:** overprovision ([29846cf](https://github.com/ibacalu/infra-09/commit/29846cfdbfb81618d2bae6738bc712b2c2284bd2))
+* **keydb:** select amd nodes ([1c8b253](https://github.com/ibacalu/infra-09/commit/1c8b2538caad6571742c392396d12434831124c5))
+* **pipelines:** add node_selector ([1b0dd57](https://github.com/ibacalu/infra-09/commit/1b0dd579b0d75bb05b1cf7c48061eba161318d3c))
+* resolve certificate issues ([5e5dcc8](https://github.com/ibacalu/infra-09/commit/5e5dcc8c472242e49364c2ca81e65e4978910dce))
+
 # 1.0.0 (2026-01-23)
 
 

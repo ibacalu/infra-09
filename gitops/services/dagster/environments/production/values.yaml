@@ -14,6 +14,14 @@ postgresql:
 redis:
   enabled: true
   internal: true
+  nodeSelector:
+    kubernetes.io/arch: amd64
+  master:
+    persistence:
+      storageClass: gp2
+  slave:
+    persistence:
+      storageClass: gp2
 
 # Disable example user code deployment (will enable later)
 dagster-user-deployments:

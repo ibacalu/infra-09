@@ -1,18 +1,12 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: dagster
+  name: dagster-db
   annotations:
     argocd.qts.one/sync-wave: "-10"
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:16.6
   instances: 1
-
-  # Use a separate ServiceAccount to avoid conflict with Dagster Helm chart's SA
-  # (which has automountServiceAccountToken: false)
-  serviceAccountTemplate:
-    metadata:
-      name: dagster-db
 
   managed:
     roles:

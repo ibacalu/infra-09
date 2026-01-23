@@ -6,7 +6,7 @@ generatePostgresqlPasswordSecret: false
 # Disable built-in PostgreSQL (using external CNPG cluster)
 postgresql:
   enabled: false
-  postgresqlHost: dagster-rw
+  postgresqlHost: dagster-db-rw
   postgresqlUsername: dagster
   postgresqlDatabase: dagster
 

@@ -18,7 +18,6 @@ logFormat: text
 sources:
   - service
   - ingress
-  - traefik-proxy
 
 interval: 1m
 
@@ -32,18 +31,12 @@ domainFilters:
   - $(configmap:argocd/cluster-config#rootDNSZoneName)
 
 provider:
-  name: cloudflare
+  name: aws
 
-env:
-  - name: CF_API_TOKEN
-    valueFrom:
-      secretKeyRef:
-        name: cloudflare-auth
-        key: apiToken
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: $(configmap:argocd/cluster-config#external_dns_iam_role_arn)
 
 extraArgs:
-  - --traefik-disable-legacy
-  # - --cloudflare-proxied                   # (optional) enable the proxy feature of Cloudflare (DDOS protection, CDN...)
-  - --cloudflare-dns-records-per-page=500   # (optional) configure how many DNS records to fetch per request
-  # - --cloudflare-region-key="eu"
-  # - --exclude-record-types=AAAA             # Issue: https://github.com/kubernetes-sigs/external-dns/pull/5226
+  - --aws-zone-type=public
+  - --txt-owner-id=$(configmap:argocd/cluster-config#cluster_name)

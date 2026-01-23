@@ -134,8 +134,8 @@ module "irsa" {
     oidc_provider_arn       = module.eks.oidc_provider_arn
     cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
 
-    # Route53 zones for ExternalDNS
-    route53_zone_ids = [var.root_route53_zone_id] # Add cluster zone if created
+    # Route53 zones for external-dns and cert-manager
+    route53_zone_ids = [var.root_route53_zone_id, aws_route53_zone.cluster.zone_id]
 
     # Feature flags
     enable_karpenter                = true

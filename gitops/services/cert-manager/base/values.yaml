@@ -18,3 +18,7 @@ podDnsConfig:
 
 prometheus:
   enabled: false
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: $(configmap:argocd/cluster-config#cert_manager_iam_role_arn)

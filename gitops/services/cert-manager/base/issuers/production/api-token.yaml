@@ -13,10 +13,6 @@ spec:
     name: letsencrypt-prod-api-token
     creationPolicy: Owner
   data:
-  - secretKey: token
-    remoteRef:
-      key: cert-manager
-      property: prod_token
   - secretKey: email
     remoteRef:
       key: cert-manager

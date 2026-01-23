@@ -10,7 +10,6 @@ spec:
       name: letsencrypt-prod
     solvers:
       - dns01:
-          cloudflare:
-            apiTokenSecretRef:
-              name: letsencrypt-prod-api-token
-              key: token
+          route53:
+            region: $(configmap:argocd/cluster-config#region)
+            hostedZoneID: $(configmap:argocd/cluster-config#rootDNSZoneId)

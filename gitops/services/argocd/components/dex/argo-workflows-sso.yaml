@@ -1,12 +1,23 @@
-apiVersion: v1
-kind: Secret
-type: Opaque
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
   name: argo-workflows-sso
-  namespace: argocd
-  labels:
-    app.kubernetes.io/name: argo-workflows-sso
-    app.kubernetes.io/part-of: argocd
-data:
-  clientID: $(secret:argocd/argo-workflows-sso#clientID|b64enc)
-  clientSecret: $(secret:argocd/argo-workflows-sso#clientSecret|b64enc)
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: default
+    kind: ClusterSecretStore
+  target:
+    name: argo-workflows-sso
+    creationPolicy: Owner
+  data:
+  - secretKey: clientID
+    remoteRef:
+      key: argocd
+      property: clientID
+  - secretKey: clientSecret
+    remoteRef:
+      key: argocd
+      property: clientSecret

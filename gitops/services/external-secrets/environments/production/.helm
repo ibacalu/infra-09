@@ -10,4 +10,3 @@ config:
   output: manifests.yaml
   values:
     - ../../base/values.yaml
-    - ./cluster-secret-store.yaml

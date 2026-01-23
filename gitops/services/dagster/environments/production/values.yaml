@@ -1,6 +1,8 @@
 global:
   postgresqlSecretName: dagster-user
 
+generatePostgresqlPasswordSecret: false
+
 # Disable built-in PostgreSQL (using external CNPG cluster)
 postgresql:
   enabled: false

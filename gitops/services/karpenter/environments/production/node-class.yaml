@@ -3,6 +3,9 @@ kind: EC2NodeClass
 metadata:
   name: default
 spec:
+  kubelet:
+    podsPerCore: 10
+    maxPods: 110
   amiFamily: Bottlerocket
   amiSelectorTerms:
     - alias: bottlerocket@latest

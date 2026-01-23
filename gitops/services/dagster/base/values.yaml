@@ -1,5 +1,6 @@
 ingress:
   enabled: true
+  apiVersion: "networking.k8s.io/v1/Ingress"
   ingressClassName: nginx
   annotations:
     cert-manager.io/cluster-issuer: "$(configmap:argocd/cluster-config#cluster-issuer)"

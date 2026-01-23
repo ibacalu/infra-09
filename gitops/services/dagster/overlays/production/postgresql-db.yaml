@@ -1,0 +1,28 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: dagster
+  annotations:
+    argocd.qts.one/sync-wave: "-10"
+spec:
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.6
+  instances: 1
+
+  managed:
+    roles:
+      - name: dagster
+        superuser: true
+        login: true
+        passwordSecret:
+          name: dagster-user
+
+  bootstrap:
+    initdb:
+      database: dagster
+      owner: dagster
+      secret:
+        name: dagster-user
+      postInitSQL: []
+
+  storage:
+    size: 4Gi

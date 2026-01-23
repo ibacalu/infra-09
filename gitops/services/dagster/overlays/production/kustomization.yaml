@@ -3,5 +3,7 @@ kind: Kustomization
 
 resources:
   - ../../base
-# Patches or updates specific to the environment
-# e.g., pointing to the specific RDS instance for this environment
+  - postgresql-user.yaml
+  - postgresql-db.yaml
+
+

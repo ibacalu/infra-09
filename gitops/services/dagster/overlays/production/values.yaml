@@ -1,0 +1,19 @@
+global:
+  postgresqlSecretName: dagster-user
+
+# Disable built-in PostgreSQL (using external CNPG cluster)
+postgresql:
+  enabled: false
+  postgresqlHost: dagster-rw
+  postgresqlUsername: dagster
+  postgresqlDatabase: dagster
+
+redis:
+  enabled: true
+
+# Disable example user code deployment
+dagster-user-deployments:
+  enabled: false
+
+flower:
+  enabled: true

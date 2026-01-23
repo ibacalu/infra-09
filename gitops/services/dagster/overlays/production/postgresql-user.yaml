@@ -1,0 +1,29 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: dagster-user
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+  labels:
+    cnpg.io/reload: "true"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: default
+    kind: ClusterSecretStore
+  target:
+    name: dagster-user
+    creationPolicy: Owner
+  data:
+    - secretKey: username
+      remoteRef:
+        key: argocd/platform
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: argocd/platform
+        property: password
+    - secretKey: postgresql-password
+      remoteRef:
+        key: argocd/platform
+        property: password

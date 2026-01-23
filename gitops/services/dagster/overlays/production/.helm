@@ -6,7 +6,8 @@ metadata:
 config:
   repository: https://dagster-io.github.io/helm
   chart: dagster
-  version: 1.6.0
+  version: 1.12.12
   output: manifests.yaml
   values:
     - ../../base/values.yaml
+    - values.yaml

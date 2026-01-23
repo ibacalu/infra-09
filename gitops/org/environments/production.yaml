@@ -13,5 +13,6 @@ spec:
         - name: external-secrets
         - name: karpenter
         - name: ingress-nginx
+        - name: cloudnative-pg
         # Apps
         - name: dagster

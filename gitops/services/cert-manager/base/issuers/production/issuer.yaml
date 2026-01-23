@@ -5,7 +5,7 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: $(secret:argocd/cert-manager#prod_email)
+    email: $(secret:cert-manager/letsencrypt-prod-api-token#email)
     privateKeySecretRef:
       name: letsencrypt-prod
     solvers:

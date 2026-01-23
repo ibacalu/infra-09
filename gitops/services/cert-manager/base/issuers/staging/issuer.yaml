@@ -5,7 +5,7 @@ metadata:
 spec:
   acme:
     server: https://acme-staging-v02.api.letsencrypt.org/directory
-    email: $(secret:argocd/cert-manager#staging_email)
+    email: $(secret:cert-manager/letsencrypt-staging-api-token#email)
     privateKeySecretRef:
       name: letsencrypt-staging
     solvers:

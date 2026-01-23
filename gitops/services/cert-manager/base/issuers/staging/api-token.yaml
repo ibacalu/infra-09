@@ -17,3 +17,7 @@ spec:
     remoteRef:
       key: cert-manager
       property: staging_token
+  - secretKey: email
+    remoteRef:
+      key: cert-manager
+      property: staging_email

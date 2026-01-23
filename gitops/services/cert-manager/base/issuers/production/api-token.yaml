@@ -17,3 +17,7 @@ spec:
     remoteRef:
       key: cert-manager
       property: prod_token
+  - secretKey: email
+    remoteRef:
+      key: cert-manager
+      property: prod_email

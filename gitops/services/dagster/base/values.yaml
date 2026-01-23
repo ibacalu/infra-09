@@ -13,6 +13,8 @@ ingress:
       secretName: dagster-tls
 
 dagsterWebserver:
+  nodeSelector:
+    kubernetes.io/arch: amd64
   resources:
     requests:
       cpu: 100m
@@ -22,6 +24,8 @@ dagsterWebserver:
       memory: 512Mi
 
 dagsterDaemon:
+  nodeSelector:
+    kubernetes.io/arch: amd64
   resources:
     requests:
       cpu: 100m
@@ -37,6 +41,9 @@ rabbitmq:
   enabled: false
 
 redis:
+  enabled: false
+
+flower:
   enabled: false
 
 telemetry:

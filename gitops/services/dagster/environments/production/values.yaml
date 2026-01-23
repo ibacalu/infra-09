@@ -10,13 +10,31 @@ postgresql:
   postgresqlUsername: dagster
   postgresqlDatabase: dagster
 
+# Enable Redis as Celery broker
 redis:
   enabled: true
+  internal: true
 
-# Disable example user code deployment
+# Disable example user code deployment (will enable later)
 dagster-user-deployments:
   enabled: false
   enableSubchart: false
 
+# Use Celery executor with Redis as broker
+runLauncher:
+  type: CeleryK8sRunLauncher
+  config:
+    celeryK8sRunLauncher:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      workerQueues:
+        - name: "dagster"
+          replicaCount: 2
+          nodeSelector:
+            kubernetes.io/arch: amd64
+
+# Enable Flower for Celery monitoring
 flower:
   enabled: true
+  nodeSelector:
+    kubernetes.io/arch: amd64

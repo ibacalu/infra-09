@@ -5,3 +5,8 @@ appendonly: "no"
 
 loadBalancer:
   enabled: false
+
+persistentVolume:
+  enabled: true
+  size: 1Gi
+  storageClass: gp2

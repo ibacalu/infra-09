@@ -10,3 +10,6 @@ persistentVolume:
   enabled: true
   size: 1Gi
   storageClass: gp2
+
+nodeSelector:
+  kubernetes.io/arch: amd64

@@ -10,18 +10,12 @@ postgresql:
   postgresqlUsername: dagster
   postgresqlDatabase: dagster
 
-# Enable Redis as Celery broker
+# Use external KeyDB as Redis/Celery broker
 redis:
   enabled: true
-  internal: true
-  nodeSelector:
-    kubernetes.io/arch: amd64
-  master:
-    persistence:
-      storageClass: gp2
-  slave:
-    persistence:
-      storageClass: gp2
+  internal: false
+  host: keydb.keydb.svc.cluster.local
+  port: 6379
 
 # Disable example user code deployment (will enable later)
 dagster-user-deployments:

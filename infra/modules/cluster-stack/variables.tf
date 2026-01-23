@@ -72,7 +72,17 @@ variable "argocd_base_url" {
   default     = "https://github.com/ibacalu/infra-09//gitops/services/argocd/base?ref=main"
 }
 
-variable "secrets_prefix" {
-  description = "Prefix for secrets in AWS Secrets Manager (e.g. eks/platform-main-01/argocd/)"
+variable "nat_instance_type" {
+  description = "Instance type for NAT instances"
   type        = string
+  default     = "t4g.micro"
+}
+
+variable "secrets" {
+  description = "List of secrets to pass to bootstrap Lambda. Each entry contains ARN and name for explicit secret loading."
+  type = list(object({
+    arn  = string
+    name = string
+  }))
+  default = []
 }

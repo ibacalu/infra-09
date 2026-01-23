@@ -55,12 +55,7 @@ resource "aws_lambda_invocation" "bootstrap" {
   input = jsonencode({
     cluster_name = module.eks.cluster_name
     region       = data.aws_region.current.id
-
-    # Secrets are read from Secrets Manager by prefix
-    secrets_prefix = var.secrets_prefix
-
-    # ArgoCD manifests (pre-rendered by kustomization provider)
-    # Passed in priority order: p0 (CRDs/Namespaces), p1 (Core), p2 (CRs)
+    secrets      = var.secrets
     argocd_manifests_p0 = [
       for id in data.kustomization_overlay.argocd.ids_prio[0] :
       data.kustomization_overlay.argocd.manifests[id]
@@ -88,6 +83,7 @@ resource "aws_lambda_invocation" "bootstrap" {
     argocd_manifests_hash   = sha256(jsonencode(data.kustomization_overlay.argocd.ids))
     argocd_project_hash     = sha256(local.argocd_project_manifest)
     argocd_application_hash = sha256(local.argocd_application_manifest)
+    secrets_hash            = sha256(jsonencode(var.secrets))
   }
 
   depends_on = [

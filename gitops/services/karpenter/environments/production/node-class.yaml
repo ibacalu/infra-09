@@ -17,3 +17,4 @@ spec:
     Name: karpenter-node
     Organization: "ibacalu"
     Environment: "$(configmap:argocd/cluster-config#environment)"
+    karpenter.sh/discovery: "$(configmap:argocd/cluster-config#cluster_name)"

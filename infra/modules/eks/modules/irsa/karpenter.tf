@@ -169,6 +169,17 @@ data "aws_iam_policy_document" "irsa" {
     ]
     resources = [aws_sqs_queue.this.arn]
   }
+  statement {
+    actions = [
+      "iam:GetInstanceProfile",
+      "iam:ListInstanceProfiles",
+      "iam:CreateInstanceProfile",
+      "iam:DeleteInstanceProfile",
+      "iam:TagInstanceProfile",
+      "iam:AddRoleToInstanceProfile"
+    ]
+    resources = ["arn:aws:iam::${local.account_id}:instance-profile/*"]
+  }
 }
 
 resource "aws_iam_policy" "irsa" {

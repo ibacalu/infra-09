@@ -79,29 +79,36 @@ def get_cluster_info(cluster_name: str, region: str) -> dict:
     }
 
 
-def get_secrets_from_sm(prefix: str, region: str) -> dict:
+def get_secrets_from_sm(
+    secret_arns: list, region: str
+) -> dict:
     """
-    Read all secrets from Secrets Manager matching the prefix.
+    Read secrets from Secrets Manager by explicit ARNs.
+
+    Args:
+        secret_arns: List of dicts with 'arn' and optional 'name' keys
+        region: AWS region
+
     Returns a dict: {"secret-name": {"key": "value", ...}, ...}
     """
     sm = boto3.client("secretsmanager", region_name=region)
     secrets = {}
 
-    try:
-        paginator = sm.get_paginator("list_secrets")
-        for page in paginator.paginate(Filters=[{"Key": "name", "Values": [prefix]}]):
-            for secret in page.get("SecretList", []):
-                secret_name = secret["Name"]
-                short_name = secret_name.replace(prefix, "").lstrip("/")
+    if not secret_arns:
+        return secrets
 
-                try:
-                    value = sm.get_secret_value(SecretId=secret_name)
-                    secret_data = json.loads(value["SecretString"])
-                    secrets[short_name] = secret_data
-                except Exception as e:
-                    logger.warning(f"Could not read secret {secret_name}: {e}")
-    except Exception as e:
-        logger.error(f"Error listing secrets with prefix {prefix}: {e}")
+    for secret_info in secret_arns:
+        secret_arn = secret_info.get("arn")
+        short_name = secret_info.get("name", secret_arn.split("/")[-1])
+
+        try:
+            value = sm.get_secret_value(SecretId=secret_arn)
+            secret_data = json.loads(value["SecretString"])
+            secrets[short_name] = secret_data
+            logger.info(f"Loaded secret: {short_name}")
+        except Exception as e:
+            logger.error(f"Failed to read secret {secret_arn}: {e}")
+            raise  # Fail fast - explicit secrets must exist
 
     return secrets
 
@@ -357,11 +364,12 @@ def handler(event: dict, context: Any) -> dict:
     {
         "cluster_name": "platform-09-main-01",
         "region": "eu-central-1",
-        "secrets_prefix": "eks/platform-09-main-01/argocd/",
+        "secrets": [  # Preferred: explicit secret list
+            {"arn": "arn:aws:secretsmanager:...", "name": "github-org-credentials"}
+        ],
         "argocd_manifests_p0": [...],  # Priority 0: CRDs, Namespaces
         "argocd_manifests_p1": [...],  # Priority 1: Core resources
         "argocd_manifests_p2": [...],  # Priority 2: Custom Resources
-        "argocd_config": { "repo_url": ..., "repo_path": ..., "branch": ..., "environment": ... },
         "cluster_config": { ... }
     }
     """
@@ -369,7 +377,7 @@ def handler(event: dict, context: Any) -> dict:
 
     cluster_name = event["cluster_name"]
     region = event.get("region", os.environ.get("AWS_REGION", "eu-central-1"))
-    secrets_prefix = event.get("secrets_prefix", f"eks/{cluster_name}/argocd/")
+    explicit_secrets = event.get("secrets", [])
     argocd_manifests_p0 = event.get("argocd_manifests_p0", [])
     argocd_manifests_p1 = event.get("argocd_manifests_p1", [])
     argocd_manifests_p2 = event.get("argocd_manifests_p2", [])
@@ -415,8 +423,7 @@ def handler(event: dict, context: Any) -> dict:
                 logger.warning("ArgoCD installation had issues, continuing...")
 
         # Step 3: Read and create secrets from Secrets Manager
-        logger.info(f"Reading secrets with prefix: {secrets_prefix}")
-        secrets = get_secrets_from_sm(secrets_prefix, region)
+        secrets = get_secrets_from_sm(explicit_secrets, region)
         for secret_name, secret_data in secrets.items():
             labels = {}
             if "_labels" in secret_data:

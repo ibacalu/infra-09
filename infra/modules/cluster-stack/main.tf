@@ -49,6 +49,7 @@ module "fck_nat" {
   vpc_id                  = module.vpc.vpc_id
   public_subnet_id        = module.vpc.public_subnets[0]
   private_route_table_ids = module.vpc.vpc.private_route_table_ids
+  instance_type           = var.nat_instance_type
   tags                    = local.tags
 }
 
@@ -74,6 +75,11 @@ module "eks" {
   # Security Groups - Enable recommended rules for node-to-control-plane communication
   node_security_group_enable_recommended_rules = true
 
+  node_security_group_tags = {
+    # Required for Karpenter EC2NodeClass validation (spec.securityGroupSelectorTerms)
+    "karpenter.sh/discovery/${local.name}" = "true"
+  }
+
   # Addons - VPC CNI must be deployed before compute (nodes need CNI for networking)
   addons = {
     coredns    = { most_recent = true }
@@ -81,6 +87,13 @@ module "eks" {
     vpc-cni = {
       most_recent    = true
       before_compute = true # Ensure CNI is ready before nodes try to join
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_PREFIX_TARGET       = "1"
+        }
+      })
+      resolve_conflicts_on_update = "OVERWRITE"
     }
   }
 
@@ -97,6 +110,12 @@ module "eks" {
       # Bottlerocket - purpose-built for containers, minimal attack surface,
       # atomic updates with rollback, works reliably with EKS managed node groups
       ami_type = "BOTTLEROCKET_x86_64"
+
+      # Increase max-pods since we enabled Prefix Delegation in VPC CNI
+      bootstrap_extra_args = <<-EOT
+        [settings.kubernetes]
+        "max-pods" = 110
+      EOT
 
       labels = { "node-role" = "system" }
       tags   = { "karpenter.sh/discovery" = local.name }

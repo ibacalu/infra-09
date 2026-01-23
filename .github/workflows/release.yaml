@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "app/**"
+      - "apps/**"
+      - ".github/**"
 
 jobs:
   release:

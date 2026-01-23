@@ -176,7 +176,8 @@ data "aws_iam_policy_document" "irsa" {
       "iam:CreateInstanceProfile",
       "iam:DeleteInstanceProfile",
       "iam:TagInstanceProfile",
-      "iam:AddRoleToInstanceProfile"
+      "iam:AddRoleToInstanceProfile",
+      "iam:RemoveRoleFromInstanceProfile",
     ]
     resources = ["arn:aws:iam::${local.account_id}:instance-profile/*"]
   }

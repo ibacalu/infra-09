@@ -17,13 +17,13 @@ spec:
   data:
     - secretKey: username
       remoteRef:
-        key: argocd/platform
+        key: dagster
         property: username
     - secretKey: password
       remoteRef:
-        key: argocd/platform
+        key: dagster
         property: password
     - secretKey: postgresql-password
       remoteRef:
-        key: argocd/platform
+        key: dagster
         property: password

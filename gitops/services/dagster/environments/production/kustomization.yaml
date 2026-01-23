@@ -5,5 +5,3 @@ resources:
   - ../../base
   - postgresql-user.yaml
   - postgresql-db.yaml
-
-

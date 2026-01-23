@@ -1,0 +1,22 @@
+[project]
+name = "dagster-pipelines"
+version = "0.1.0"
+description = "Test Dagster data pipeline"
+requires-python = ">=3.10"
+dependencies = [
+    "dagster>=1.10.0,<1.11.0",
+    "pandas>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "dagster-webserver>=1.10.0,<1.11.0",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.dagster]
+module_name = "dagster_pipelines.definitions"

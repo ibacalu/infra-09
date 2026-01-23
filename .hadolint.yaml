@@ -1,0 +1,7 @@
+# Hadolint configuration
+# https://github.com/hadolint/hadolint
+
+ignored:
+  # We're using slim images with minimal packages, version pinning not critical for our use case
+  - DL3008
+  - DL3013

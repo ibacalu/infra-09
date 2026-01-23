@@ -1,0 +1,21 @@
+name: Tags
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Build and Push (Standard Tag)
+        uses: qtsone/actions/docker/build@main
+        with:
+          context: apps/dagster-pipelines
+          dockerfile-path: apps/dagster-pipelines/Dockerfile
+          image-name: ibacalu/dagster-pipelines
+          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,27 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "app/**"
+      - ".github/workflows/pr.yaml"
+
+jobs:
+  pr-checks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Docker Tests
+        uses: qtsone/actions/docker/tests@main
+        with:
+          context: apps/dagster-pipelines
+          dockerfile-path: Dockerfile
+          image-name: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Semantic Release
+        uses: qts-cloud/actions/release@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          ssh-key: ${{ secrets.DEPLOY_KEY }}

@@ -1,11 +1,23 @@
-apiVersion: v1
-kind: Secret
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
 metadata:
   name: dex-config
-  namespace: argocd
-  labels:
-    app.kubernetes.io/name: argocd-secret
-    app.kubernetes.io/part-of: argocd
-data:
-  clientID: $(secret:argocd/dex-sso#clientID|b64enc)
-  clientSecret: $(secret:argocd/dex-sso#clientSecret|b64enc)
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: default
+    kind: ClusterSecretStore
+  target:
+    name: dex-config
+    creationPolicy: Owner
+  data:
+  - secretKey: clientID
+    remoteRef:
+      key: dex-sso
+      property: clientID
+  - secretKey: clientSecret
+    remoteRef:
+      key: dex-sso
+      property: clientSecret

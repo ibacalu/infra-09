@@ -121,6 +121,13 @@ data_pipeline_job = dg.define_asset_job(
     name="data_pipeline_job",
     selection=[raw_data, processed_data, data_report],
     description="Complete data pipeline: fetch → process → report",
+    tags={
+        "dagster-k8s/config": {
+            "pod_spec_config": {
+                "node_selector": {"kubernetes.io/arch": "amd64"},
+            },
+        },
+    },
 )
 
 

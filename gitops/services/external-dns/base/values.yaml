@@ -39,4 +39,3 @@ serviceAccount:
 
 extraArgs:
   - --aws-zone-type=public
-  - --txt-owner-id=$(configmap:argocd/cluster-config#cluster_name)

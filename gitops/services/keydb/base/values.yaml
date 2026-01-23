@@ -1,0 +1,7 @@
+multiMaster: "yes"
+activeReplicas: "yes"
+protectedMode: "no"
+appendonly: "no"
+
+loadBalancer:
+  enabled: false

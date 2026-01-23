@@ -1,0 +1,11 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: keydb
+config:
+  repository: https://enapter.github.io/charts
+  chart: keydb
+  version: 0.48.0
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

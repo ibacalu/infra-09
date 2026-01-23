@@ -14,5 +14,6 @@ spec:
         - name: karpenter
         - name: ingress-nginx
         - name: cloudnative-pg
+        - name: keydb
         # Apps
         - name: dagster

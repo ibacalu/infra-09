@@ -25,5 +25,5 @@ spec:
       postInitSQL: []
 
   storage:
-    storageClassName: gp2
+    storageClass: gp2
     size: 4Gi

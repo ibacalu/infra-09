@@ -14,4 +14,4 @@ spec:
         - name: karpenter
         - name: ingress-nginx
         # Apps
-        - name: whoami
+        - name: dagster

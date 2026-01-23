@@ -17,7 +17,7 @@ spec:
       - group: "*"
         kind: "*"
   applications:
-    - name: podinfo
+    - name: dagster
       repoURL: https://github.com/ibacalu/infra-09.git
       targetRevision: main
-      overlays_path: gitops/services/podinfo/environments
+      overlays_path: gitops/services/dagster/environments

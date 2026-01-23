@@ -12,4 +12,4 @@ spec:
       - dns01:
           route53:
             region: $(configmap:argocd/cluster-config#region)
-            hostedZoneID: $(configmap:argocd/cluster-config#rootDNSZoneId)
+            hostedZoneID: $(configmap:argocd/cluster-config#clusterDNSZoneId)

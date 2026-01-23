@@ -11,6 +11,13 @@ ingress:
     tls:
       enabled: true
       secretName: dagster-tls
+  flower:
+    host: "flower.$(configmap:argocd/cluster-config#clusterDNSZoneName)"
+    path: "/"
+    pathType: Prefix
+    tls:
+      enabled: true
+      secretName: dagster-flower-tls
 
 dagsterWebserver:
   nodeSelector:

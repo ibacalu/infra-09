@@ -1,5 +1,8 @@
 prometheusOperator:
   enabled: true
+  admissionWebhooks:
+    certManager:
+      enabled: true
   resources:
     limits:
       cpu: 200m

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1](https://github.com/ibacalu/infra-09/compare/v1.2.0...v1.2.1) (2026-01-24)
+
+
+### Bug Fixes
+
+* **dagster:** enable prometheus sensors by default ([c3c5c23](https://github.com/ibacalu/infra-09/commit/c3c5c23df3669c2210c7a3eca1fdf353505a9171))
+
 # [1.2.0](https://github.com/ibacalu/infra-09/compare/v1.1.0...v1.2.0) (2026-01-24)
 
 

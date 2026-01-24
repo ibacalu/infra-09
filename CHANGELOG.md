@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.1.0](https://github.com/ibacalu/infra-09/compare/v1.0.1...v1.1.0) (2026-01-24)
+
+
+### Bug Fixes
+
+* **grafana:** define storage class ([f6a3781](https://github.com/ibacalu/infra-09/commit/f6a3781677267d971c89b368ac4753db08d0203a))
+* **irsa:** move ebs-csi to pod identity ([d7dffca](https://github.com/ibacalu/infra-09/commit/d7dffca6174792d38d226424834ac3fc6f3d8268))
+* **karpenter:** add spot service-linked role ([3fc73b1](https://github.com/ibacalu/infra-09/commit/3fc73b149c639cf7b392502f29fc12a2f9df29dd))
+
+
+### Features
+
+* **observability:** enable kube-prometheus-stack ([99b6a69](https://github.com/ibacalu/infra-09/commit/99b6a6957c26028e5e0ce5cebb1ed95845d52398))
+* prepare for monitoring and alerting ([38411d0](https://github.com/ibacalu/infra-09/commit/38411d096c49dd49e485f55e683baa2fa2caf802))
+
 ## [1.0.1](https://github.com/ibacalu/infra-09/compare/v1.0.0...v1.0.1) (2026-01-23)
 
 

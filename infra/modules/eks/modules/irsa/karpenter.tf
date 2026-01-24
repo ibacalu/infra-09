@@ -50,6 +50,7 @@ locals {
     "ClusterName" = var.config.cluster_name
   }
 }
+
 data "aws_iam_policy_document" "karpenter_assume" {
   statement {
     effect  = "Allow"

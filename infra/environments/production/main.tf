@@ -8,6 +8,14 @@ resource "aws_route53_zone" "root" {
   })
 }
 
+# EC2 Spot Service-Linked Role
+# Required for Karpenter to provision Spot instances.
+resource "aws_iam_service_linked_role" "spot" {
+  aws_service_name = "spot.amazonaws.com"
+  description      = "SLR for EC2 Spot Instances"
+  tags             = local.common_tags
+}
+
 module "clusters" {
   source   = "../../modules/cluster-stack"
   for_each = local.cluster_configs

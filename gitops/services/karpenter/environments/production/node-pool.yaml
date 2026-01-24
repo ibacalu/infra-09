@@ -24,7 +24,14 @@ spec:
           values: ["5"]
       expireAfter: 720h # 30 days
   limits:
-    cpu: 1000
+    cpu: 100
+    memory: 50Gi
   disruption:
     consolidationPolicy: WhenEmptyOrUnderutilized
     consolidateAfter: 1m
+    budgets:
+      - nodes: 10%
+      # Protect business hours: no voluntary disruption Mon-Fri 7am-6pm UTC
+      - schedule: "0 9 * * mon-fri"
+        duration: 9h
+        nodes: "0"

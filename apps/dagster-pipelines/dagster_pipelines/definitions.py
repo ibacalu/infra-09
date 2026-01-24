@@ -132,6 +132,35 @@ data_pipeline_job = dg.define_asset_job(
 
 
 # =============================================================================
+# Test Assets: For alert verification
+# =============================================================================
+
+
+@dg.asset(
+    description="Test asset that always fails - for alert testing only",
+    metadata={"purpose": "alert_testing"},
+)
+def test_alert_failure(context: dg.AssetExecutionContext) -> None:
+    """Always fails to test alerting pipeline."""
+    context.log.info("This asset will intentionally fail to test alerts...")
+    raise Exception("Intentional failure for alert testing - this is expected!")
+
+
+test_failure_job = dg.define_asset_job(
+    name="test_failure_job",
+    selection=[test_alert_failure],
+    description="Test job that always fails - use to verify alerting works",
+    tags={
+        "dagster-k8s/config": {
+            "pod_spec_config": {
+                "node_selector": {"kubernetes.io/arch": "amd64"},
+            },
+        },
+    },
+)
+
+
+# =============================================================================
 # Schedules: Automated execution
 # =============================================================================
 
@@ -216,7 +245,7 @@ def _push_run_metrics(context: dg.RunStatusSensorContext, status: str) -> None:
 @dg.run_status_sensor(
     name="prometheus_job_success_metrics",
     run_status=dg.DagsterRunStatus.SUCCESS,
-    monitored_jobs=[data_pipeline_job],
+    monitored_jobs=[data_pipeline_job, test_failure_job],
     default_status=dg.DefaultSensorStatus.RUNNING,
 )
 def prometheus_job_success_metrics(context: dg.RunStatusSensorContext):
@@ -227,7 +256,7 @@ def prometheus_job_success_metrics(context: dg.RunStatusSensorContext):
 @dg.run_status_sensor(
     name="prometheus_job_failure_metrics",
     run_status=dg.DagsterRunStatus.FAILURE,
-    monitored_jobs=[data_pipeline_job],
+    monitored_jobs=[data_pipeline_job, test_failure_job],
     default_status=dg.DefaultSensorStatus.RUNNING,
 )
 def prometheus_job_failure_metrics(context: dg.RunStatusSensorContext):
@@ -240,8 +269,8 @@ def prometheus_job_failure_metrics(context: dg.RunStatusSensorContext):
 # =============================================================================
 
 defs = dg.Definitions(
-    assets=[raw_data, processed_data, data_report],
-    jobs=[data_pipeline_job],
+    assets=[raw_data, processed_data, data_report, test_alert_failure],
+    jobs=[data_pipeline_job, test_failure_job],
     schedules=[daily_pipeline_schedule],
     sensors=[prometheus_job_success_metrics, prometheus_job_failure_metrics],
 )

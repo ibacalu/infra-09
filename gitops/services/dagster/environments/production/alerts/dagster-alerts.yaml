@@ -9,21 +9,25 @@ groups:
         title: Dagster Job Failed
         condition: C
         data:
-          # Query: time since last failure (in seconds)
+          # Query A: Alert if failure is more recent than success
+          # Returns 1 if last failure > last success, 0 otherwise
           - refId: A
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
             datasourceUid: prometheus
             model:
-              expr: time() - dagster_job_last_run_timestamp{status="failure"}
+              expr: |
+                dagster_job_last_run_timestamp{status="failure"} 
+                > ignoring(status) 
+                dagster_job_last_run_timestamp{status="success"}
               intervalMs: 1000
               maxDataPoints: 43200
               refId: A
-          # Reduce to single value
+          # Query B: Reduce to single value per job
           - refId: B
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
             datasourceUid: __expr__
             model:
@@ -36,10 +40,10 @@ groups:
               reducer: last
               refId: B
               type: reduce
-          # Threshold: alert if failure happened in last 5 minutes (300s)
+          # Query C: Alert if result is 1 (failure more recent than success)
           - refId: C
             relativeTimeRange:
-              from: 300
+              from: 600
               to: 0
             datasourceUid: __expr__
             model:
@@ -54,8 +58,8 @@ groups:
               conditions:
                 - evaluator:
                     params:
-                      - 300
-                    type: lt
+                      - 0.5
+                    type: gt
                   operator:
                     type: and
                   query:
@@ -65,6 +69,8 @@ groups:
                     params: []
                     type: last
                   type: query
+        noDataState: OK
+        execErrState: OK
         for: 0m
         annotations:
           summary: "Dagster pipeline {{ $labels.job }} failed"
@@ -72,6 +78,8 @@ groups:
             A Dagster job has failed and requires attention.
             
             **Job**: {{ $labels.job }}
+            
+            The last run of this job was a failure. A successful re-run will auto-resolve this alert.
             
             Check the Dagster UI for error details and logs.
           runbook_url: "https://github.com/ibacalu/infra-09/blob/main/docs/runbooks/dagster-job-failure.md"

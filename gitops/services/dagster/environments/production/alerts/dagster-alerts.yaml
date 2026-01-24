@@ -13,7 +13,7 @@ groups:
           # Returns 1 if last failure > last success, 0 otherwise
           - refId: A
             relativeTimeRange:
-              from: 600
+              from: 86400
               to: 0
             datasourceUid: prometheus
             model:
@@ -21,13 +21,14 @@ groups:
                 dagster_job_last_run_timestamp{status="failure"} 
                 > ignoring(status) 
                 dagster_job_last_run_timestamp{status="success"}
+              instant: true
               intervalMs: 1000
               maxDataPoints: 43200
               refId: A
           # Query B: Reduce to single value per job
           - refId: B
             relativeTimeRange:
-              from: 600
+              from: 86400
               to: 0
             datasourceUid: __expr__
             model:
@@ -43,7 +44,7 @@ groups:
           # Query C: Alert if result is 1 (failure more recent than success)
           - refId: C
             relativeTimeRange:
-              from: 600
+              from: 86400
               to: 0
             datasourceUid: __expr__
             model:

@@ -23,5 +23,5 @@ jobs:
         with:
           context: apps/dagster-pipelines
           dockerfile-path: apps/dagster-pipelines/Dockerfile
-          image-name: ${{ github.repository }}
+          image-name: ibacalu/dagster-pipelines
           github-token: ${{ secrets.GITHUB_TOKEN }}

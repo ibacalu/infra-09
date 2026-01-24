@@ -5,6 +5,7 @@ description = "Test Dagster data pipeline"
 requires-python = ">=3.10"
 dependencies = [
     "dagster>=1.10.0,<1.11.0",
+    "dagster-prometheus>=0.26.0",
     "pandas>=2.0.0",
 ]
 

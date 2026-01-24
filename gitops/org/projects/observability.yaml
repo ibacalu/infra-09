@@ -34,3 +34,13 @@ spec:
           name: kube-prometheus-stack-admission
           jqPathExpressions:
             - .webhooks[]?.clientConfig.caBundle
+
+    - name: prometheus-pushgateway
+      repoURL: https://github.com/ibacalu/infra-09.git
+      targetRevision: main
+      overlays_path: gitops/services/prometheus-pushgateway/environments
+      namespace: monitoring
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true

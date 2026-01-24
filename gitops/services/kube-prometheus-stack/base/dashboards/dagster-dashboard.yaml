@@ -1,0 +1,274 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-dagster
+  namespace: monitoring
+  labels:
+    grafana_dashboard: "1"
+data:
+  dagster-pipeline.json: |
+    {
+      "annotations": {
+        "list": []
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 0,
+      "id": null,
+      "links": [],
+      "liveNow": false,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "red", "value": 1}
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+          "id": 1,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "10.0.0",
+          "targets": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "expr": "sum(dagster_job_runs_total{status=\"success\"}) or vector(0)",
+              "legendFormat": "Successful Runs",
+              "refId": "A"
+            }
+          ],
+          "title": "Total Successful Runs",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "red"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "red", "value": 1}
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+          "id": 2,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": ["lastNotNull"],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "10.0.0",
+          "targets": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "expr": "sum(dagster_job_runs_total{status=\"failed\"}) or vector(0)",
+              "legendFormat": "Failed Runs",
+              "refId": "A"
+            }
+          ],
+          "title": "Total Failed Runs",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "palette-classic"},
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "bars",
+                "fillOpacity": 80,
+                "gradientMode": "none",
+                "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {"type": "linear"},
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {"group": "A", "mode": "normal"},
+                "thresholdsStyle": {"mode": "off"}
+              },
+              "mappings": [],
+              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "unit": "short"
+            },
+            "overrides": [
+              {
+                "matcher": {"id": "byName", "options": "Failed"},
+                "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]
+              }
+            ]
+          },
+          "gridPos": {"h": 10, "w": 24, "x": 0, "y": 8},
+          "id": 3,
+          "options": {
+            "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+            "tooltip": {"mode": "single", "sort": "none"}
+          },
+          "targets": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "expr": "sum(increase(dagster_job_runs_total{status=\"success\"}[1h])) or vector(0)",
+              "legendFormat": "Success",
+              "refId": "A"
+            },
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "expr": "sum(increase(dagster_job_runs_total{status=\"failed\"}[1h])) or vector(0)",
+              "legendFormat": "Failed",
+              "refId": "B"
+            }
+          ],
+          "title": "Job Runs Over Time (per hour)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 3600},
+                  {"color": "red", "value": 86400}
+                ]
+              },
+              "unit": "dtdurations"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 6, "w": 12, "x": 0, "y": 18},
+          "id": 4,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "expr": "time() - max(dagster_job_last_run_timestamp{status=\"success\"})",
+              "legendFormat": "Time Since Last Success",
+              "refId": "A"
+            }
+          ],
+          "title": "Time Since Last Successful Run",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "red", "value": null}
+                ]
+              },
+              "unit": "dtdurations"
+            },
+            "overrides": []
+          },
+          "gridPos": {"h": 6, "w": 12, "x": 12, "y": 18},
+          "id": 5,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+            "textMode": "auto"
+          },
+          "targets": [
+            {
+              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "expr": "time() - max(dagster_job_last_run_timestamp{status=\"failed\"})",
+              "legendFormat": "Time Since Last Failure",
+              "refId": "A"
+            }
+          ],
+          "title": "Time Since Last Failed Run",
+          "type": "stat"
+        }
+      ],
+      "refresh": "30s",
+      "schemaVersion": 38,
+      "style": "dark",
+      "tags": ["dagster", "data-pipeline"],
+      "templating": {"list": []},
+      "time": {"from": "now-24h", "to": "now"},
+      "timepicker": {},
+      "timezone": "",
+      "title": "Dagster Pipeline Monitoring",
+      "uid": "dagster-pipeline",
+      "version": 1,
+      "weekStart": ""
+    }

@@ -1,0 +1,11 @@
+apiVersion: helm.qts.one/v1
+kind: Configuration
+metadata:
+  name: prometheus-pushgateway
+config:
+  repository: https://prometheus-community.github.io/helm-charts
+  chart: prometheus-pushgateway
+  version: 3.6.0
+  output: manifests.yaml
+  values:
+    - ../../base/values.yaml

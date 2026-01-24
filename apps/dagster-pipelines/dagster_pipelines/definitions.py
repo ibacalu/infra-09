@@ -149,11 +149,42 @@ def daily_pipeline_schedule(context: dg.ScheduleEvaluationContext):
 
 
 # =============================================================================
-# Definitions: Register all components
+# Prometheus Monitoring: Push job metrics on completion
+# =============================================================================
+
+import os
+from dagster_prometheus import PrometheusResource
+
+
+# Single sensor for all run completions
+@dg.run_status_sensor(
+    name="prometheus_job_metrics",
+    run_status_type={dg.DagsterRunStatus.SUCCESS, dg.DagsterRunStatus.FAILURE},
+    monitored_jobs=[data_pipeline_job],
+)
+def prometheus_job_metrics(context: dg.RunStatusSensorContext, prometheus: PrometheusResource):
+    """Push job run metrics to Prometheus on completion."""
+    status = "success" if context.dagster_run.status == dg.DagsterRunStatus.SUCCESS else "failed"
+    job_label = f"dagster_{context.dagster_run.job_name}_{status}"
+    prometheus.push_to_gateway(job=job_label)
+    context.log.info(f"Pushed {status} metric for {context.dagster_run.job_name}")
+
+
+# =============================================================================
+# Definitions: Register all components with resources
 # =============================================================================
 
 defs = dg.Definitions(
     assets=[raw_data, processed_data, data_report],
     jobs=[data_pipeline_job],
     schedules=[daily_pipeline_schedule],
+    sensors=[prometheus_job_metrics],
+    resources={
+        "prometheus": PrometheusResource(
+            gateway=os.environ.get(
+                "PUSHGATEWAY_URL",
+                "http://prometheus-pushgateway.monitoring.svc:9091"
+            )
+        )
+    },
 )

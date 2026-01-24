@@ -153,21 +153,82 @@ def daily_pipeline_schedule(context: dg.ScheduleEvaluationContext):
 # =============================================================================
 
 import os
-from dagster_prometheus import PrometheusResource
+from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
 
 
-# Single sensor for all run completions
+def _push_run_metrics(context: dg.RunStatusSensorContext, status: str) -> None:
+    """Push run metrics to Prometheus Pushgateway.
+    
+    Metrics pushed:
+    - dagster_job_run_duration_seconds: Duration of the run
+    - dagster_job_last_run_timestamp: Unix timestamp when the run completed
+    
+    Note: We use Gauges because Pushgateway replaces values on each push.
+    Counters don't work correctly with Pushgateway semantics.
+    """
+    run = context.dagster_run
+    job_name = run.job_name
+    
+    # Create a fresh registry for each push to avoid metric conflicts
+    registry = CollectorRegistry()
+    
+    # Run duration in seconds
+    run_duration = Gauge(
+        "dagster_job_run_duration_seconds",
+        "Duration of the Dagster job run in seconds",
+        ["job", "status"],
+        registry=registry,
+    )
+    
+    # Last run timestamp (useful for alerting: "no success in X hours")
+    last_run_timestamp = Gauge(
+        "dagster_job_last_run_timestamp",
+        "Unix timestamp when the job run completed",
+        ["job", "status"],
+        registry=registry,
+    )
+    
+    # Calculate duration from run stats
+    stats = run.stats
+    duration_seconds = 0.0
+    if stats and hasattr(stats, "start_time") and hasattr(stats, "end_time"):
+        if stats.start_time and stats.end_time:
+            duration_seconds = stats.end_time - stats.start_time
+    
+    # Set metric values
+    run_duration.labels(job=job_name, status=status).set(duration_seconds)
+    last_run_timestamp.labels(job=job_name, status=status).set_to_current_time()
+    
+    # Push to gateway
+    gateway_url = os.environ.get(
+        "PUSHGATEWAY_URL",
+        "http://prometheus-pushgateway.monitoring.svc:9091"
+    )
+    push_to_gateway(gateway_url, job=f"dagster_{job_name}", registry=registry)
+    
+    context.log.info(
+        f"Pushed metrics for {job_name}: status={status}, duration={duration_seconds:.2f}s"
+    )
+
+
 @dg.run_status_sensor(
-    name="prometheus_job_metrics",
-    run_status_type={dg.DagsterRunStatus.SUCCESS, dg.DagsterRunStatus.FAILURE},
+    name="prometheus_job_success_metrics",
+    run_status=dg.DagsterRunStatus.SUCCESS,
     monitored_jobs=[data_pipeline_job],
 )
-def prometheus_job_metrics(context: dg.RunStatusSensorContext, prometheus: PrometheusResource):
-    """Push job run metrics to Prometheus on completion."""
-    status = "success" if context.dagster_run.status == dg.DagsterRunStatus.SUCCESS else "failed"
-    job_label = f"dagster_{context.dagster_run.job_name}_{status}"
-    prometheus.push_to_gateway(job=job_label)
-    context.log.info(f"Pushed {status} metric for {context.dagster_run.job_name}")
+def prometheus_job_success_metrics(context: dg.RunStatusSensorContext):
+    """Push success metrics to Prometheus on job completion."""
+    _push_run_metrics(context, "success")
+
+
+@dg.run_status_sensor(
+    name="prometheus_job_failure_metrics",
+    run_status=dg.DagsterRunStatus.FAILURE,
+    monitored_jobs=[data_pipeline_job],
+)
+def prometheus_job_failure_metrics(context: dg.RunStatusSensorContext):
+    """Push failure metrics to Prometheus on job failure."""
+    _push_run_metrics(context, "failure")
 
 
 # =============================================================================
@@ -178,13 +239,5 @@ defs = dg.Definitions(
     assets=[raw_data, processed_data, data_report],
     jobs=[data_pipeline_job],
     schedules=[daily_pipeline_schedule],
-    sensors=[prometheus_job_metrics],
-    resources={
-        "prometheus": PrometheusResource(
-            gateway=os.environ.get(
-                "PUSHGATEWAY_URL",
-                "http://prometheus-pushgateway.monitoring.svc:9091"
-            )
-        )
-    },
+    sensors=[prometheus_job_success_metrics, prometheus_job_failure_metrics],
 )

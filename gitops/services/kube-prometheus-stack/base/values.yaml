@@ -168,35 +168,24 @@ grafana:
               title: Dagster Job Failed
               condition: C
               data:
+                # Query: time since last failure (in seconds)
                 - refId: A
                   relativeTimeRange:
                     from: 300
                     to: 0
                   datasourceUid: prometheus
                   model:
-                    expr: push_time_seconds{job=~"dagster_.*_failed"}
+                    expr: time() - dagster_job_last_run_timestamp{status="failure"}
                     intervalMs: 1000
                     maxDataPoints: 43200
                     refId: A
+                # Reduce to single value
                 - refId: B
                   relativeTimeRange:
                     from: 300
                     to: 0
                   datasourceUid: __expr__
                   model:
-                    conditions:
-                      - evaluator:
-                          params: []
-                          type: gt
-                        operator:
-                          type: and
-                        query:
-                          params:
-                            - B
-                        reducer:
-                          params: []
-                          type: last
-                        type: query
                     datasource:
                       type: __expr__
                       uid: __expr__
@@ -206,17 +195,26 @@ grafana:
                     reducer: last
                     refId: B
                     type: reduce
+                # Threshold: alert if failure happened in last 5 minutes (300s)
                 - refId: C
                   relativeTimeRange:
                     from: 300
                     to: 0
                   datasourceUid: __expr__
                   model:
+                    datasource:
+                      type: __expr__
+                      uid: __expr__
+                    expression: B
+                    intervalMs: 1000
+                    maxDataPoints: 43200
+                    refId: C
+                    type: threshold
                     conditions:
                       - evaluator:
                           params:
-                            - 0
-                          type: gt
+                            - 300
+                          type: lt
                         operator:
                           type: and
                         query:
@@ -226,17 +224,9 @@ grafana:
                           params: []
                           type: last
                         type: query
-                    datasource:
-                      type: __expr__
-                      uid: __expr__
-                    expression: B
-                    intervalMs: 1000
-                    maxDataPoints: 43200
-                    refId: C
-                    type: threshold
               for: 0m
               annotations:
-                summary: 'Dagster job failed'
+                summary: 'Dagster job {{ $labels.job }} failed'
                 description: 'A Dagster job has failed. Check the Dagster UI for details.'
               labels:
                 severity: critical

@@ -10,14 +10,26 @@ data:
   dagster-pipeline.json: |
     {
       "annotations": {
-        "list": []
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "type": "dashboard"
+          }
+        ]
       },
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
-      "id": null,
+      "id": 33,
       "links": [],
-      "liveNow": false,
       "panels": [
         {
           "datasource": {
@@ -33,33 +45,54 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 3600},
-                  {"color": "red", "value": 86400}
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 3600
+                  },
+                  {
+                    "color": "red",
+                    "value": 86400
+                  }
                 ]
               },
               "unit": "dtdurations"
             },
             "overrides": []
           },
-          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
           "id": 1,
           "options": {
             "colorMode": "value",
             "graphMode": "none",
             "justifyMode": "auto",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
-              "calcs": ["lastNotNull"],
+              "calcs": [
+                "lastNotNull"
+              ],
               "fields": "",
               "values": false
             },
-            "textMode": "auto"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "10.0.0",
+          "pluginVersion": "11.6.0",
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "time() - max(dagster_job_last_run_timestamp{status=\"success\"})",
               "legendFormat": "Time Since Last Success",
               "refId": "A"
@@ -82,33 +115,54 @@ data:
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "orange", "value": 300},
-                  {"color": "red", "value": 0}
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "orange",
+                    "value": 300
+                  },
+                  {
+                    "color": "red",
+                    "value": 0
+                  }
                 ]
               },
               "unit": "dtdurations"
             },
             "overrides": []
           },
-          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
           "id": 2,
           "options": {
             "colorMode": "value",
             "graphMode": "none",
             "justifyMode": "auto",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
-              "calcs": ["lastNotNull"],
+              "calcs": [
+                "lastNotNull"
+              ],
               "fields": "",
               "values": false
             },
-            "textMode": "auto"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "10.0.0",
+          "pluginVersion": "11.6.0",
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "time() - max(dagster_job_last_run_timestamp{status=\"failure\"}) or vector(0)",
               "legendFormat": "Time Since Last Failure",
               "refId": "A"
@@ -124,47 +178,94 @@ data:
           },
           "fieldConfig": {
             "defaults": {
-              "color": {"mode": "palette-classic"},
+              "color": {
+                "mode": "palette-classic"
+              },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "Duration (seconds)",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 20,
                 "gradientMode": "none",
-                "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
                 "lineInterpolation": "smooth",
                 "lineWidth": 2,
                 "pointSize": 5,
-                "scaleDistribution": {"type": "linear"},
+                "scaleDistribution": {
+                  "type": "linear"
+                },
                 "showPoints": "always",
                 "spanNulls": false,
-                "stacking": {"group": "A", "mode": "none"},
-                "thresholdsStyle": {"mode": "off"}
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
               },
               "mappings": [],
-              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
               "unit": "s"
             },
             "overrides": []
           },
-          "gridPos": {"h": 10, "w": 24, "x": 0, "y": 8},
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
           "id": 3,
           "options": {
-            "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true},
-            "tooltip": {"mode": "single", "sort": "none"}
+            "legend": {
+              "calcs": [
+                "mean",
+                "max"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
           },
+          "pluginVersion": "11.6.0",
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "dagster_job_run_duration_seconds{status=\"success\"}",
               "legendFormat": "{{ job }} - Success",
               "refId": "A"
             },
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "dagster_job_run_duration_seconds{status=\"failure\"}",
               "legendFormat": "{{ job }} - Failure",
               "refId": "B"
@@ -180,33 +281,61 @@ data:
           },
           "fieldConfig": {
             "defaults": {
-              "color": {"mode": "thresholds"},
+              "color": {
+                "mode": "thresholds"
+              },
               "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 60},
-                  {"color": "red", "value": 300}
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 60
+                  },
+                  {
+                    "color": "red",
+                    "value": 300
+                  }
                 ]
               },
               "unit": "s"
             },
             "overrides": []
           },
-          "gridPos": {"h": 6, "w": 12, "x": 0, "y": 18},
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 18
+          },
           "id": 4,
           "options": {
             "colorMode": "value",
             "graphMode": "area",
             "justifyMode": "auto",
             "orientation": "auto",
-            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
-            "textMode": "auto"
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
+          "pluginVersion": "11.6.0",
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "dagster_job_run_duration_seconds{status=\"success\"}",
               "legendFormat": "Last Run Duration",
               "refId": "A"
@@ -222,47 +351,91 @@ data:
           },
           "fieldConfig": {
             "defaults": {
-              "color": {"mode": "palette-classic"},
+              "color": {
+                "mode": "palette-classic"
+              },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 10,
                 "gradientMode": "none",
-                "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
                 "lineInterpolation": "smooth",
                 "lineWidth": 2,
                 "pointSize": 5,
-                "scaleDistribution": {"type": "linear"},
+                "scaleDistribution": {
+                  "type": "linear"
+                },
                 "showPoints": "always",
                 "spanNulls": false,
-                "stacking": {"group": "A", "mode": "none"},
-                "thresholdsStyle": {"mode": "off"}
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
               },
               "mappings": [],
-              "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
               "unit": "dateTimeAsIso"
             },
             "overrides": []
           },
-          "gridPos": {"h": 6, "w": 12, "x": 12, "y": 18},
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 18
+          },
           "id": 5,
           "options": {
-            "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
-            "tooltip": {"mode": "single", "sort": "none"}
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
           },
+          "pluginVersion": "11.6.0",
           "targets": [
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "dagster_job_last_run_timestamp{status=\"success\"} * 1000",
               "legendFormat": "Success",
               "refId": "A"
             },
             {
-              "datasource": {"type": "prometheus", "uid": "prometheus"},
+              "datasource": {
+                "type": "prometheus",
+                "uid": "prometheus"
+              },
               "expr": "dagster_job_last_run_timestamp{status=\"failure\"} * 1000",
               "legendFormat": "Failure",
               "refId": "B"
@@ -272,16 +445,23 @@ data:
           "type": "timeseries"
         }
       ],
+      "preload": false,
       "refresh": "30s",
-      "schemaVersion": 38,
-      "style": "dark",
-      "tags": ["dagster", "data-pipeline"],
-      "templating": {"list": []},
-      "time": {"from": "now-24h", "to": "now"},
+      "schemaVersion": 41,
+      "tags": [
+        "dagster",
+        "data-pipeline"
+      ],
+      "templating": {
+        "list": []
+      },
+      "time": {
+        "from": "now-24h",
+        "to": "now"
+      },
       "timepicker": {},
       "timezone": "",
       "title": "Dagster Pipeline Monitoring",
-      "uid": "dagster-pipeline",
-      "version": 2,
-      "weekStart": ""
+      "uid": "dagster-pipeline-dash",
+      "version": 1
     }

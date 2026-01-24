@@ -67,7 +67,15 @@ groups:
                   type: query
         for: 0m
         annotations:
-          summary: "Dagster job {{ $labels.job }} failed"
-          description: "A Dagster job has failed. Check the Dagster UI for details."
+          summary: "Dagster pipeline {{ $labels.job }} failed"
+          description: |
+            A Dagster job has failed and requires attention.
+            
+            **Job**: {{ $labels.job }}
+            
+            Check the Dagster UI for error details and logs.
+          runbook_url: "https://github.com/ibacalu/infra-09/blob/main/docs/runbooks/dagster-job-failure.md"
         labels:
           severity: critical
+          service: dagster
+          team: data-engineering

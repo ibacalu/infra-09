@@ -5,3 +5,12 @@ resources:
   - ../../base
   - postgresql-user.yaml
   - postgresql-db.yaml
+
+configMapGenerator:
+  - name: dagster-dashboard
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: "1"
+    files:
+      - dagster-pipeline.json=dashboards/dagster-pipeline.json

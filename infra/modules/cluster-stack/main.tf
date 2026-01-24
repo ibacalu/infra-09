@@ -82,8 +82,10 @@ module "eks" {
 
   # Addons - VPC CNI must be deployed before compute (nodes need CNI for networking)
   addons = {
-    coredns    = { most_recent = true }
-    kube-proxy = { most_recent = true }
+    coredns                = { most_recent = true }
+    kube-proxy             = { most_recent = true }
+    eks-pod-identity-agent = { most_recent = true }
+    aws-ebs-csi-driver     = { most_recent = true }
     vpc-cni = {
       most_recent    = true
       before_compute = true # Ensure CNI is ready before nodes try to join
@@ -138,11 +140,11 @@ module "irsa" {
     route53_zone_ids = [var.root_route53_zone_id, aws_route53_zone.cluster.zone_id]
 
     # Feature flags
-    enable_karpenter                = true
-    enable_cluster_autoscaler       = false
-    enable_external_dns             = true
-    enable_cert_manager             = true
-    enable_aws_ebs_csi_driver       = true
+    enable_karpenter          = true
+    enable_cluster_autoscaler = false
+    enable_external_dns       = true
+    enable_cert_manager       = true
+
     enable_load_balancer_controller = true
     enable_external_secrets         = true
   }

@@ -20,7 +20,7 @@ locals {
     karpenter_node_iam_role_arn      = module.irsa.karpenter_node_iam_role_arn
     external_dns_iam_role_arn        = module.irsa.external_dns_iam_role_arn
     cert_manager_iam_role_arn        = module.irsa.cert_manager_iam_role_arn
-    aws_ebs_csi_driver_iam_role_arn  = module.irsa.aws_ebs_csi_driver_iam_role_arn
+    aws_ebs_csi_driver_iam_role_arn  = aws_iam_role.aws_ebs_csi_driver.arn
     aws_load_balancer_controller_arn = module.irsa.aws_load_balancer_controller_arn
     autoscaler_iam_role_arn          = module.irsa.autoscaler_iam_role_arn
     external_secrets_iam_role_arn    = module.irsa.external_secrets_iam_role_arn

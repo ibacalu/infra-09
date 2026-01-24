@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.2.0](https://github.com/ibacalu/infra-09/compare/v1.1.0...v1.2.0) (2026-01-24)
+
+
+### Bug Fixes
+
+* **argocd:** add missing ref keys ([4d908e8](https://github.com/ibacalu/infra-09/commit/4d908e80b39897f4bb4aa1de1350fa4e456ff809))
+* **argocd:** ignore diff ([da6be2b](https://github.com/ibacalu/infra-09/commit/da6be2b87ccdfdd93c363c758920e1f42fdc9aa7))
+* cleanup ns from prometheus stack ([2a350a6](https://github.com/ibacalu/infra-09/commit/2a350a6872a64597d13a241756480b6de97af3cc))
+* **grafana:** enable unified alerting ([a472d64](https://github.com/ibacalu/infra-09/commit/a472d643edf425c32bc6a824fec256f1d684e792))
+* **kube-prometheus-stack:** avoid render issue ([094cc09](https://github.com/ibacalu/infra-09/commit/094cc0926b5886ce2d129bbfdc770916fcff9595))
+
+
+### Features
+
+* **dagster:** add custom prometheus metrics for job monitoring ([fdcac9d](https://github.com/ibacalu/infra-09/commit/fdcac9d157adbe0359850b7dd92184ab5bab1a15))
+
 # [1.1.0](https://github.com/ibacalu/infra-09/compare/v1.0.1...v1.1.0) (2026-01-24)
 
 

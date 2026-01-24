@@ -188,12 +188,14 @@ def _push_run_metrics(context: dg.RunStatusSensorContext, status: str) -> None:
         registry=registry,
     )
     
-    # Calculate duration from run stats
-    stats = run.stats
+    # Calculate duration from run stats via the instance
     duration_seconds = 0.0
-    if stats and hasattr(stats, "start_time") and hasattr(stats, "end_time"):
-        if stats.start_time and stats.end_time:
+    try:
+        stats = context.instance.get_run_stats(run.run_id)
+        if stats and stats.start_time and stats.end_time:
             duration_seconds = stats.end_time - stats.start_time
+    except Exception as e:
+        context.log.warning(f"Could not get run stats: {e}")
     
     # Set metric values
     run_duration.labels(job=job_name, status=status).set(duration_seconds)

@@ -215,6 +215,7 @@ def _push_run_metrics(context: dg.RunStatusSensorContext, status: str) -> None:
     name="prometheus_job_success_metrics",
     run_status=dg.DagsterRunStatus.SUCCESS,
     monitored_jobs=[data_pipeline_job],
+    default_status=dg.DefaultSensorStatus.RUNNING,
 )
 def prometheus_job_success_metrics(context: dg.RunStatusSensorContext):
     """Push success metrics to Prometheus on job completion."""
@@ -225,6 +226,7 @@ def prometheus_job_success_metrics(context: dg.RunStatusSensorContext):
     name="prometheus_job_failure_metrics",
     run_status=dg.DagsterRunStatus.FAILURE,
     monitored_jobs=[data_pipeline_job],
+    default_status=dg.DefaultSensorStatus.RUNNING,
 )
 def prometheus_job_failure_metrics(context: dg.RunStatusSensorContext):
     """Push failure metrics to Prometheus on job failure."""

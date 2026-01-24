@@ -236,7 +236,7 @@ grafana:
                     type: threshold
               for: 0m
               annotations:
-                summary: 'Dagster job {{ index $labels "job" }} failed'
+                summary: 'Dagster job failed'
                 description: 'A Dagster job has failed. Check the Dagster UI for details.'
               labels:
                 severity: critical

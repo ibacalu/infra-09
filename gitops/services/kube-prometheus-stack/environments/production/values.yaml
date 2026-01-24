@@ -1,0 +1,57 @@
+grafana:
+  adminUser: admin
+  adminPassword: secretPassword
+  defaultDashboardsTimezone: Europe/Berlin
+  persistence:
+    enabled: true
+    storageClassName: gp2
+    type: sts
+    size: 5Gi
+
+  # Enable sidecar to discover alert rules from ConfigMaps
+  sidecar:
+    alerts:
+      enabled: true
+      label: grafana_alert
+      labelValue: "1"
+      searchNamespace: ALL
+
+  # Enable Grafana Alerting
+  alerting:
+    contactpoints.yaml:
+      apiVersion: 1
+      contactPoints:
+        - orgId: 1
+          name: pagerduty
+          receivers:
+            - uid: pagerduty-dagster
+              type: pagerduty
+              settings:
+                integrationKey: $__file{/etc/secrets/pagerduty/key}
+                severity: critical
+                class: dagster
+
+    policies.yaml:
+      apiVersion: 1
+      policies:
+        - orgId: 1
+          receiver: pagerduty
+          group_by: ['alertname', 'job']
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 4h
+
+  # Alert rules are defined in individual service ConfigMaps (e.g., dagster-grafana-alerts)
+  # and discovered by the sidecar.alerts configuration above.
+
+  # Mount PagerDuty secret for alerting
+  extraSecretMounts:
+    - name: pagerduty-secret
+      mountPath: /etc/secrets/pagerduty
+      secretName: grafana-pagerduty
+      readOnly: true
+
+  # Grafana configuration via grafana.ini
+  grafana.ini:
+    unified_alerting:
+      enabled: true

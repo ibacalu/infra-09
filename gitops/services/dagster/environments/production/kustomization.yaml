@@ -14,3 +14,10 @@ configMapGenerator:
         grafana_dashboard: "1"
     files:
       - dagster-pipeline.json=dashboards/dagster-pipeline.json
+  - name: dagster-alerts
+    options:
+      disableNameSuffixHash: true
+      labels:
+        grafana_alert: "1"
+    files:
+      - dagster-alerts.yaml=alerts/dagster-alerts.yaml

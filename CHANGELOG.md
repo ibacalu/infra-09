@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.3.0](https://github.com/ibacalu/infra-09/compare/v1.2.2...v1.3.0) (2026-01-24)
+
+
+### Bug Fixes
+
+* **dagster:** move grafana dashboard ([684530d](https://github.com/ibacalu/infra-09/commit/684530d8049c7a5c2689cf10d249fdebc9c4fe7b))
+* **dagster:** refactor dasbhoard and alerts ([534dd14](https://github.com/ibacalu/infra-09/commit/534dd14580e224e3faf5e4927f4dae555bcdd7fd))
+* **dashboard:** update queries to match actual metrics ([e620da1](https://github.com/ibacalu/infra-09/commit/e620da12931e904b4e5807ba6444ec11cbb0c6ba))
+* **grafana:** move dashboard to folder ([d55553c](https://github.com/ibacalu/infra-09/commit/d55553c50299ec7ff667bbeaf76b12cb38b952f1))
+* **grafana:** refactor alerts ([99c890a](https://github.com/ibacalu/infra-09/commit/99c890a47ade7280bce6434c082328b8f11f13ae))
+* **prometheus:** add back admissionWebhooks ([ea2153c](https://github.com/ibacalu/infra-09/commit/ea2153c3d2f5da94f5d0ecf72da8878df6c32607))
+
+
+### Features
+
+* **dagster:** add a failure to test and refine alert ([aafe078](https://github.com/ibacalu/infra-09/commit/aafe0787ea86b3cd872754d01bef10358c85ab94))
+
 ## [1.2.2](https://github.com/ibacalu/infra-09/compare/v1.2.1...v1.2.2) (2026-01-24)
 
 

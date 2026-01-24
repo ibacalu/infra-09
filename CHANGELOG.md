@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.2](https://github.com/ibacalu/infra-09/compare/v1.2.1...v1.2.2) (2026-01-24)
+
+
+### Bug Fixes
+
+* **dagster:** use instance.get_run_stats() for run duration ([3194234](https://github.com/ibacalu/infra-09/commit/3194234287e4ef37d707240b18a2d7ecf4b80939))
+
 ## [1.2.1](https://github.com/ibacalu/infra-09/compare/v1.2.0...v1.2.1) (2026-01-24)
 
 

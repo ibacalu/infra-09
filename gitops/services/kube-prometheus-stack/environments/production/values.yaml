@@ -57,13 +57,11 @@ grafana:
 # Kube-State-Metrics Configuration
 # Enable job metrics and whitelist Dagster labels for pipeline tracking
 # -----------------------------------------------------------------------------
-kubeStateMetrics:
-  enable: true
-  collectors:
-    - jobs
-    - pods
+kube-state-metrics:
+  # Expose Dagster labels as metric labels for alerting
   metricLabelsAllowlist:
     - jobs=[dagster/job,dagster/run-id,dagster/code-location]
+
 
 # -----------------------------------------------------------------------------
 # Prometheus Configuration  

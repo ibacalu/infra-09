@@ -27,6 +27,17 @@ module "eks" {
     "karpenter.sh/discovery/${local.name}" = "true"
   }
 
+  node_security_group_additional_rules = {
+    ingress_self_all = {
+      description = "Node to node all ports/protocols"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "ingress"
+      self        = true
+    }
+  }
+
   # Addons - VPC CNI must be deployed before compute (nodes need CNI for networking)
   addons = {
     coredns                = { most_recent = true }

@@ -13,8 +13,6 @@ variable "cluster_identifier" {
   type        = string
 }
 
-
-
 variable "region" {
   description = "AWS Region"
   type        = string

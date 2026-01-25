@@ -6,7 +6,7 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: $(configmap:argocd/cluster-config#karpenter_iam_role_arn)
 
-replicas: 2
+replicas: 1 # We only have one EKS managed node group
 
 settings:
   clusterName: $(configmap:argocd/cluster-config#cluster_name)

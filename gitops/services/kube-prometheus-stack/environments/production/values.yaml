@@ -116,18 +116,20 @@ alertmanager:
         pagerduty_configs:
           - service_key_file: /etc/alertmanager/secrets/pagerduty-key/key
             severity: critical
-            description: '{{ .Annotations.summary }}'
+            # Use CommonAnnotations/CommonLabels for receiver templates
+            description: '{{ .CommonAnnotations.summary }}'
             details:
-              alertname: '{{ .Labels.alertname }}'
-              namespace: '{{ .Labels.namespace }}'
-              job: '{{ .Labels.job }}'
-              description: '{{ .Annotations.description }}'
+              alertname: '{{ .CommonLabels.alertname }}'
+              namespace: '{{ .CommonLabels.namespace }}'
+              job: '{{ .CommonLabels.job }}'
+              description: '{{ .CommonAnnotations.description }}'
       
       - name: 'pagerduty-warning'
         pagerduty_configs:
           - service_key_file: /etc/alertmanager/secrets/pagerduty-key/key
             severity: warning
-            description: '{{ .Annotations.summary }}'
+            description: '{{ .CommonAnnotations.summary }}'
       
       - name: 'null'
         # Null receiver - alerts are acknowledged but not routed
+

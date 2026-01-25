@@ -1,3 +1,6 @@
+# -----------------------------------------------------------------------------
+# Grafana Configuration
+# -----------------------------------------------------------------------------
 grafana:
   adminUser: admin
   adminPassword: secretPassword
@@ -8,50 +11,123 @@ grafana:
     type: sts
     size: 5Gi
 
-  # Enable sidecar to discover alert rules from ConfigMaps
+  # Enable sidecar to discover dashboards and alerts from ConfigMaps
   sidecar:
+    dashboards:
+      enabled: true
+      label: grafana_dashboard
+      labelValue: "1"
+      searchNamespace: ALL
     alerts:
       enabled: true
       label: grafana_alert
       labelValue: "1"
       searchNamespace: ALL
 
-  # Enable Grafana Alerting
+  # Configure Grafana Unified Alerting to forward to Alertmanager
   alerting:
     contactpoints.yaml:
       apiVersion: 1
       contactPoints:
         - orgId: 1
-          name: pagerduty
+          name: alertmanager
           receivers:
-            - uid: pagerduty-dagster
-              type: pagerduty
+            - uid: alertmanager-receiver
+              type: prometheus-alertmanager
               settings:
-                integrationKey: $__file{/etc/secrets/pagerduty/key}
-                severity: critical
-                class: dagster
-
+                url: http://alertmanager-operated.monitoring.svc:9093
+                # Send resolved notifications
+                sendResolved: true
+    
     policies.yaml:
       apiVersion: 1
       policies:
         - orgId: 1
-          receiver: pagerduty
-          group_by: ['alertname', 'job']
+          receiver: alertmanager
+          group_by: ['alertname', 'job', 'namespace']
           group_wait: 30s
           group_interval: 5m
           repeat_interval: 4h
-
-  # Alert rules are defined in individual service ConfigMaps (e.g., dagster-grafana-alerts)
-  # and discovered by the sidecar.alerts configuration above.
-
-  # Mount PagerDuty secret for alerting
-  extraSecretMounts:
-    - name: pagerduty-secret
-      mountPath: /etc/secrets/pagerduty
-      secretName: grafana-pagerduty
-      readOnly: true
-
-  # Grafana configuration via grafana.ini
+  
   grafana.ini:
     unified_alerting:
       enabled: true
+
+# -----------------------------------------------------------------------------
+# Kube-State-Metrics Configuration
+# Enable job metrics and whitelist Dagster labels for pipeline tracking
+# -----------------------------------------------------------------------------
+kubeStateMetrics:
+  enable: true
+  collectors:
+    - jobs
+    - pods
+  metricLabelsAllowlist:
+    - jobs=[dagster/job,dagster/run-id,dagster/code-location]
+
+# -----------------------------------------------------------------------------
+# Prometheus Configuration  
+# Allow discovery of PrometheusRules from all namespaces
+# -----------------------------------------------------------------------------
+prometheus:
+  prometheusSpec:
+    ruleNamespaceSelector: {}
+    ruleSelector: {}
+    ruleSelectorNilUsesHelmValues: false
+
+# -----------------------------------------------------------------------------
+# Alertmanager Configuration
+# Single source of truth for all alert routing → PagerDuty
+# -----------------------------------------------------------------------------
+alertmanager:
+  enabled: true
+  
+  # Mount the PagerDuty secret
+  alertmanagerSpec:
+    secrets:
+      - pagerduty-key
+  
+  config:
+    global:
+      resolve_timeout: 5m
+    
+    route:
+      receiver: 'pagerduty-critical'
+      group_by: ['alertname', 'namespace', 'job']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      routes:
+        # Critical alerts → PagerDuty
+        - match:
+            severity: critical
+          receiver: 'pagerduty-critical'
+        # Warning alerts → PagerDuty (lower urgency)
+        - match:
+            severity: warning
+          receiver: 'pagerduty-warning'
+        # Info alerts → null (don't page for info)
+        - match:
+            severity: info
+          receiver: 'null'
+    
+    receivers:
+      - name: 'pagerduty-critical'
+        pagerduty_configs:
+          - service_key_file: /etc/alertmanager/secrets/pagerduty-key/key
+            severity: critical
+            description: '{{ .Annotations.summary }}'
+            details:
+              alertname: '{{ .Labels.alertname }}'
+              namespace: '{{ .Labels.namespace }}'
+              job: '{{ .Labels.job }}'
+              description: '{{ .Annotations.description }}'
+      
+      - name: 'pagerduty-warning'
+        pagerduty_configs:
+          - service_key_file: /etc/alertmanager/secrets/pagerduty-key/key
+            severity: warning
+            description: '{{ .Annotations.summary }}'
+      
+      - name: 'null'
+        # Null receiver - alerts are acknowledged but not routed

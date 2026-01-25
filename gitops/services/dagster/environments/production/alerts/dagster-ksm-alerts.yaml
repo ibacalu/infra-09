@@ -1,0 +1,29 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: dagster-ksm-alerts
+  labels:
+    role: alert-rules
+spec:
+  groups:
+  - name: dagster-operations
+    rules:
+    - alert: DagsterJobFailed
+      expr: kube_job_status_failed{job_name=~"dagster-run-.*"} > 0
+      for: 1m
+      labels:
+        severity: critical
+        service: dagster
+        team: data-engineering
+      annotations:
+        summary: "Pipeline {{ $labels.label_dagster_job }} failed"
+        description: |
+          Dagster Run ID {{ $labels.label_dagster_run_id }} has failed.
+          
+          **Pipeline**: {{ $labels.label_dagster_job }}
+          **Run ID**: {{ $labels.label_dagster_run_id }}
+          
+          Check the Dagster UI for logs and details.
+        # Dynamic URL to Dagster UI run page
+        runbook_url: "https://dagster.$(configmap:argocd/cluster-config#clusterDNSZoneName)/runs/{{ $labels.label_dagster_run_id }}"
+        dashboard_url: "https://grafana.$(configmap:argocd/cluster-config#clusterDNSZoneName)/d/dagster-health"

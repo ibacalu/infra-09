@@ -55,3 +55,26 @@ flower:
 
 telemetry:
   enabled: false
+
+# -----------------------------------------------------------------------------
+# Run Launcher Configuration
+# Enable KSM-based alerting by having K8s Jobs reflect pipeline status
+# -----------------------------------------------------------------------------
+runLauncher:
+  config:
+    k8sRunLauncher:
+      # When true, the K8s Job/Pod exits with non-zero if the pipeline fails.
+      # This allows kube_job_status_failed metric to detect failures.
+      failPodOnRunFailure: true
+      runK8sConfig:
+        jobSpecConfig:
+          # Keep completed Jobs for 10 minutes so Prometheus can scrape metrics.
+          # Without this, Jobs are deleted immediately and metrics are lost.
+          ttlSecondsAfterFinished: 600
+
+    celeryK8sRunLauncher:
+      # Same settings for Celery-based execution
+      failPodOnRunFailure: true
+      runK8sConfig:
+        jobSpecConfig:
+          ttlSecondsAfterFinished: 600

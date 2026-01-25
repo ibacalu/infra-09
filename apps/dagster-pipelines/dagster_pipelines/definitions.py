@@ -159,7 +159,6 @@ test_failure_job = dg.define_asset_job(
     },
 )
 
-
 # =============================================================================
 # Schedules: Automated execution
 # =============================================================================
@@ -178,93 +177,6 @@ def daily_pipeline_schedule(context: dg.ScheduleEvaluationContext):
 
 
 # =============================================================================
-# Prometheus Monitoring: Push job metrics on completion
-# =============================================================================
-
-import os
-from prometheus_client import CollectorRegistry, Gauge, push_to_gateway
-
-
-def _push_run_metrics(context: dg.RunStatusSensorContext, status: str) -> None:
-    """Push run metrics to Prometheus Pushgateway.
-    
-    Metrics pushed:
-    - dagster_job_run_duration_seconds: Duration of the run
-    - dagster_job_last_run_timestamp: Unix timestamp when the run completed
-    
-    Note: We use Gauges because Pushgateway replaces values on each push.
-    Counters don't work correctly with Pushgateway semantics.
-    """
-    run = context.dagster_run
-    job_name = run.job_name
-    
-    # Create a fresh registry for each push to avoid metric conflicts
-    registry = CollectorRegistry()
-    
-    # Run duration in seconds
-    run_duration = Gauge(
-        "dagster_job_run_duration_seconds",
-        "Duration of the Dagster job run in seconds",
-        ["job", "status"],
-        registry=registry,
-    )
-    
-    # Last run timestamp (useful for alerting: "no success in X hours")
-    last_run_timestamp = Gauge(
-        "dagster_job_last_run_timestamp",
-        "Unix timestamp when the job run completed",
-        ["job", "status"],
-        registry=registry,
-    )
-    
-    # Calculate duration from run stats via the instance
-    duration_seconds = 0.0
-    try:
-        stats = context.instance.get_run_stats(run.run_id)
-        if stats and stats.start_time and stats.end_time:
-            duration_seconds = stats.end_time - stats.start_time
-    except Exception as e:
-        context.log.warning(f"Could not get run stats: {e}")
-    
-    # Set metric values
-    run_duration.labels(job=job_name, status=status).set(duration_seconds)
-    last_run_timestamp.labels(job=job_name, status=status).set_to_current_time()
-    
-    # Push to gateway
-    gateway_url = os.environ.get(
-        "PUSHGATEWAY_URL",
-        "http://prometheus-pushgateway.monitoring.svc:9091"
-    )
-    push_to_gateway(gateway_url, job=f"dagster_{job_name}", registry=registry)
-    
-    context.log.info(
-        f"Pushed metrics for {job_name}: status={status}, duration={duration_seconds:.2f}s"
-    )
-
-
-@dg.run_status_sensor(
-    name="prometheus_job_success_metrics",
-    run_status=dg.DagsterRunStatus.SUCCESS,
-    monitored_jobs=[data_pipeline_job, test_failure_job],
-    default_status=dg.DefaultSensorStatus.RUNNING,
-)
-def prometheus_job_success_metrics(context: dg.RunStatusSensorContext):
-    """Push success metrics to Prometheus on job completion."""
-    _push_run_metrics(context, "success")
-
-
-@dg.run_status_sensor(
-    name="prometheus_job_failure_metrics",
-    run_status=dg.DagsterRunStatus.FAILURE,
-    monitored_jobs=[data_pipeline_job, test_failure_job],
-    default_status=dg.DefaultSensorStatus.RUNNING,
-)
-def prometheus_job_failure_metrics(context: dg.RunStatusSensorContext):
-    """Push failure metrics to Prometheus on job failure."""
-    _push_run_metrics(context, "failure")
-
-
-# =============================================================================
 # Definitions: Register all components with resources
 # =============================================================================
 
@@ -272,5 +184,5 @@ defs = dg.Definitions(
     assets=[raw_data, processed_data, data_report, test_alert_failure],
     jobs=[data_pipeline_job, test_failure_job],
     schedules=[daily_pipeline_schedule],
-    sensors=[prometheus_job_success_metrics, prometheus_job_failure_metrics],
 )
+

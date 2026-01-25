@@ -5,19 +5,13 @@ resources:
   - ../../base
   - postgresql-user.yaml
   - postgresql-db.yaml
+  - alerts/dagster-ksm-alerts.yaml
 
 configMapGenerator:
-  - name: dagster-dashboard
+  - name: dagster-health-dashboard
+    files:
+      - dagster-health-dashboard.json=dashboards/dagster-health-dashboard.json
     options:
       disableNameSuffixHash: true
       labels:
         grafana_dashboard: "1"
-    files:
-      - dagster-pipeline.json=dashboards/dagster-pipeline.json
-  - name: dagster-alerts
-    options:
-      disableNameSuffixHash: true
-      labels:
-        grafana_alert: "1"
-    files:
-      - dagster-alerts.yaml=alerts/dagster-alerts.yaml

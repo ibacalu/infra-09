@@ -13,6 +13,17 @@ prometheusOperator:
 
 alertmanager:
   enabled: true
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: "$(configmap:argocd/cluster-config#cluster-issuer)"
+    hosts:
+      - alertmanager.$(configmap:argocd/cluster-config#clusterDNSZoneName)
+    tls:
+      - secretName: alertmanager-tls
+        hosts:
+          - alertmanager.$(configmap:argocd/cluster-config#clusterDNSZoneName)
 
 kubelet:
   serviceMonitor:

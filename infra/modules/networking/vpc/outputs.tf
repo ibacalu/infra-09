@@ -22,4 +22,3 @@ output "private_subnets" {
 output "network_objects" {
   value = local.network_objects
 }
-

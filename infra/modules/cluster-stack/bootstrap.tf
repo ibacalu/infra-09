@@ -25,8 +25,8 @@ module "bootstrap_lambda" {
   source = "../cluster-bootstrap-lambda"
 
   name_prefix = local.name
-  vpc_id      = module.vpc.vpc_id
-  subnet_ids  = module.vpc.private_subnets
+  vpc_id      = var.vpc_config.vpc_id
+  subnet_ids  = var.vpc_config.private_subnets
   tags        = local.tags
 }
 

@@ -1,16 +1,16 @@
 output "vpc_id" {
   description = "VPC ID"
-  value       = module.vpc.vpc_id
+  value       = var.vpc_config.vpc_id
 }
 
 output "private_subnets" {
   description = "Private Subnets"
-  value       = module.vpc.private_subnets
+  value       = var.vpc_config.private_subnets
 }
 
 output "public_subnets" {
   description = "Public Subnets"
-  value       = module.vpc.public_subnets
+  value       = var.vpc_config.public_subnets
 }
 
 output "cluster_name" {

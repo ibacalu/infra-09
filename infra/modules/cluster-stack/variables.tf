@@ -13,10 +13,7 @@ variable "cluster_identifier" {
   type        = string
 }
 
-variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
-  type        = string
-}
+
 
 variable "region" {
   description = "AWS Region"
@@ -72,11 +69,7 @@ variable "argocd_base_url" {
   default     = "https://github.com/ibacalu/infra-09//gitops/services/argocd/base?ref=main"
 }
 
-variable "nat_instance_type" {
-  description = "Instance type for NAT instances"
-  type        = string
-  default     = "t4g.micro"
-}
+
 
 variable "secrets" {
   description = "List of secrets to pass to bootstrap Lambda. Each entry contains ARN and name for explicit secret loading."
@@ -85,4 +78,13 @@ variable "secrets" {
     name = string
   }))
   default = []
+}
+
+variable "vpc_config" {
+  description = "Shared VPC configuration from parent module"
+  type = object({
+    vpc_id          = string
+    public_subnets  = list(string)
+    private_subnets = list(string)
+  })
 }

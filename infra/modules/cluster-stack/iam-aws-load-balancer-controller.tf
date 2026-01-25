@@ -1,6 +1,26 @@
+
+# Pod Identity IAM Role for AWS Load Balancer Controller
+# Manages ALB/NLB resources for Kubernetes ingress and services
+
+data "aws_iam_policy_document" "aws_load_balancer_controller_assume" {
+  statement {
+    actions = ["sts:AssumeRole", "sts:TagSession"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "aws:SourceAccount"
+      values   = [data.aws_caller_identity.current.account_id]
+    }
+  }
+}
+
 data "aws_iam_policy_document" "aws_load_balancer_controller" {
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
     actions   = ["iam:CreateServiceLinkedRole"]
@@ -13,7 +33,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -45,7 +64,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -71,7 +89,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -82,14 +99,12 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
     actions   = ["ec2:CreateSecurityGroup"]
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["arn:aws:ec2:*:*:security-group/*"]
     actions   = ["ec2:CreateTags"]
@@ -108,7 +123,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["arn:aws:ec2:*:*:security-group/*"]
 
@@ -131,7 +145,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -149,7 +162,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -166,7 +178,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -179,7 +190,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid    = ""
     effect = "Allow"
 
     resources = [
@@ -207,7 +217,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid    = ""
     effect = "Allow"
 
     resources = [
@@ -224,7 +233,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -247,7 +255,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["arn:aws:elasticloadbalancing:*:*:targetgroup/*/*"]
 
@@ -258,7 +265,6 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 
   statement {
-    sid       = ""
     effect    = "Allow"
     resources = ["*"]
 
@@ -272,50 +278,21 @@ data "aws_iam_policy_document" "aws_load_balancer_controller" {
   }
 }
 
-data "aws_iam_policy_document" "aws_load_balancer_controller_assume" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
+resource "aws_iam_role" "aws_load_balancer_controller" {
+  name               = "${local.name}-load-balancer-controller"
+  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume.json
 
-    principals {
-      type        = "Federated"
-      identifiers = [var.config.oidc_provider_arn]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${trimprefix(var.config.cluster_oidc_issuer_url, "https://")}:sub"
-      values   = ["system:serviceaccount:kube-system:aws-load-balancer-controller"]
-    }
-
-    condition {
-      test     = "StringEquals"
-      variable = "${trimprefix(var.config.cluster_oidc_issuer_url, "https://")}:aud"
-      values   = ["sts.amazonaws.com"]
-    }
-
-  }
+  tags = local.tags
 }
 
 resource "aws_iam_policy" "aws_load_balancer_controller" {
-  # count       = var.config.enable_aws_load_balancer_controller ? 1 : 0
-  name   = "${var.config.cluster_name}-load-balancer-controller"
+  name   = "${local.name}-load-balancer-controller"
   policy = data.aws_iam_policy_document.aws_load_balancer_controller.json
-}
 
-resource "aws_iam_role" "aws_load_balancer_controller" {
-  # count              = var.config.enable_aws_load_balancer_controller ? 1 : 0
-  name               = "${var.config.cluster_name}-load-balancer-controller"
-  assume_role_policy = data.aws_iam_policy_document.aws_load_balancer_controller_assume.json
-
-  tags = {
-    "alpha.eksctl.io/cluster-name"                = var.config.cluster_name
-    "eksctl.cluster.k8s.io/v1alpha1/cluster-name" = var.config.cluster_name
-    "alpha.eksctl.io/iamserviceaccount-name"      = "kube-system/aws-load-balancer-controller"
-  }
+  tags = local.tags
 }
 
 resource "aws_iam_role_policy_attachment" "aws_load_balancer_controller" {
-  # count      = var.config.enable_aws_load_balancer_controller ? 1 : 0
   role       = aws_iam_role.aws_load_balancer_controller.name
   policy_arn = aws_iam_policy.aws_load_balancer_controller.arn
 }

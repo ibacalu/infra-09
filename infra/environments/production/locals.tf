@@ -68,7 +68,7 @@ locals {
 
   # Define Cluster Configs
   clusters = {
-    # Define overrides here
+    # Define overrides here (subnet sizing, region, etc.)
     "main-01" = {}
   }
 
@@ -81,7 +81,6 @@ locals {
       region          = try(cluster.region, var.aws_region)
       secrets_prefix  = try(cluster.secrets_prefix, "eks/${var.project_name}-${key}/argocd/")
       cluster_version = try(cluster.cluster_version, "1.31")
-      vpc_cidr        = try(cluster.vpc_cidr, var.vpc_cidr)
       argocd_config = try(cluster.argocd_config, {
         repo_url    = "https://github.com/ibacalu/infra-09.git"
         repo_path   = "gitops/org"

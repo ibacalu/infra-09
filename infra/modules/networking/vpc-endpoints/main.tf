@@ -47,7 +47,6 @@ module "endpoints" {
   vpc_id = var.vpc_id
 
   endpoints = {
-    # Gateway endpoint for S3 (FREE)
     s3 = {
       service         = "s3"
       service_type    = "Gateway"
@@ -55,7 +54,6 @@ module "endpoints" {
       tags            = { Name = "${var.name}-s3" }
     }
 
-    # Interface endpoints for AWS services
     ecr_api = {
       service             = "ecr.api"
       private_dns_enabled = true
@@ -96,7 +94,6 @@ module "endpoints" {
       tags                = { Name = "${var.name}-logs" }
     }
 
-    # SSM endpoints for Systems Manager (optional but useful for debugging)
     ssm = {
       service             = "ssm"
       private_dns_enabled = true

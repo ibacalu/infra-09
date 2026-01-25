@@ -12,18 +12,17 @@ locals {
     cluster_endpoint = module.eks.cluster_endpoint
     cluster_arn      = module.eks.cluster_arn
     region           = data.aws_region.current.id
-    vpc_id           = module.vpc.vpc_id
+    vpc_id           = var.vpc_config.vpc_id
     environment      = var.environment
 
-    # IAM Roles
-    karpenter_iam_role_arn           = module.irsa.karpenter_iam_role_arn
-    karpenter_node_iam_role_arn      = module.irsa.karpenter_node_iam_role_arn
-    external_dns_iam_role_arn        = module.irsa.external_dns_iam_role_arn
-    cert_manager_iam_role_arn        = module.irsa.cert_manager_iam_role_arn
+    # IAM Roles (Pod Identity)
+    karpenter_iam_role_arn           = aws_iam_role.karpenter.arn
+    karpenter_node_iam_role_arn      = aws_iam_role.karpenter_node.arn
+    external_dns_iam_role_arn        = aws_iam_role.external_dns.arn
+    cert_manager_iam_role_arn        = aws_iam_role.cert_manager.arn
     aws_ebs_csi_driver_iam_role_arn  = aws_iam_role.aws_ebs_csi_driver.arn
-    aws_load_balancer_controller_arn = module.irsa.aws_load_balancer_controller_arn
-    autoscaler_iam_role_arn          = module.irsa.autoscaler_iam_role_arn
-    external_secrets_iam_role_arn    = module.irsa.external_secrets_iam_role_arn
+    external_secrets_iam_role_arn    = aws_iam_role.external_secrets.arn
+    aws_load_balancer_controller_arn = aws_iam_role.aws_load_balancer_controller.arn
 
     # DNS
     rootDNSZoneName    = var.root_route53_zone_name

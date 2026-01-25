@@ -1,59 +1,6 @@
-# VPC
-module "vpc" {
-  source = "../../modules/networking/vpc"
+# EKS Cluster
+# VPC, VPC Endpoints, and NAT are provided by the parent module (shared infrastructure)
 
-  config = {
-    environment   = var.environment
-    vpc_name      = "${local.name}-vpc"
-    vpc_cidr      = var.vpc_cidr
-    max_cidr_mask = 18
-
-    clusters = {
-      main = {
-        public_subnet_new_bit  = 8 # /24
-        private_subnet_new_bit = 6 # /22
-      }
-    }
-
-    public_subnet_tags = {
-      "kubernetes.io/role/elb"               = "1"
-      "karpenter.sh/discovery/${local.name}" = "true"
-    }
-    private_subnet_tags = {
-      "kubernetes.io/role/internal-elb"      = "1"
-      "karpenter.sh/discovery/${local.name}" = "true"
-    }
-
-    enable_nat_gateway = false # Using fck-nat
-    tags               = local.tags
-  }
-}
-
-# VPC Endpoints
-module "vpc_endpoints" {
-  source = "../../modules/networking/vpc-endpoints"
-
-  name            = local.name
-  vpc_id          = module.vpc.vpc_id
-  vpc_cidr        = var.vpc_cidr
-  subnet_ids      = module.vpc.private_subnets
-  route_table_ids = module.vpc.vpc.private_route_table_ids
-  tags            = local.tags
-}
-
-# NAT
-module "fck_nat" {
-  source = "../../modules/networking/fck-nat"
-
-  name                    = local.name
-  vpc_id                  = module.vpc.vpc_id
-  public_subnet_id        = module.vpc.public_subnets[0]
-  private_route_table_ids = module.vpc.vpc.private_route_table_ids
-  instance_type           = var.nat_instance_type
-  tags                    = local.tags
-}
-
-# EKS
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "21.14.0"
@@ -61,8 +8,8 @@ module "eks" {
   name               = local.name
   kubernetes_version = var.cluster_version
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets # Worker nodes in private subnets
+  vpc_id     = var.vpc_config.vpc_id
+  subnet_ids = var.vpc_config.private_subnets # Worker nodes in private subnets
 
   # Access
   endpoint_private_access = true
@@ -123,38 +70,6 @@ module "eks" {
       tags   = { "karpenter.sh/discovery" = local.name }
     }
   }
-
-  tags = local.tags
-}
-
-# Setup IAM Roles for Service Accounts
-module "irsa" {
-  source = "../eks/modules/irsa"
-
-  config = {
-    cluster_name            = module.eks.cluster_name
-    oidc_provider_arn       = module.eks.oidc_provider_arn
-    cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
-
-    # Route53 zones for external-dns and cert-manager
-    route53_zone_ids = [var.root_route53_zone_id, aws_route53_zone.cluster.zone_id]
-
-    # Feature flags
-    enable_karpenter          = true
-    enable_cluster_autoscaler = false
-    enable_external_dns       = true
-    enable_cert_manager       = true
-
-    enable_load_balancer_controller = true
-    enable_external_secrets         = true
-  }
-}
-
-# Karpenter Node Access
-resource "aws_eks_access_entry" "karpenter_node" {
-  cluster_name  = module.eks.cluster_name
-  principal_arn = module.irsa.karpenter_node_iam_role_arn
-  type          = "EC2_LINUX"
 
   tags = local.tags
 }

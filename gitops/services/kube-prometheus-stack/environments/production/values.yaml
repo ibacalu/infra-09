@@ -2,9 +2,10 @@
 # Grafana Configuration
 # -----------------------------------------------------------------------------
 grafana:
-  adminUser: admin
-  adminPassword: secretPassword
-  defaultDashboardsTimezone: Europe/Berlin
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
   persistence:
     enabled: true
     storageClassName: gp2

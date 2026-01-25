@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - ../../base
   - pagerduty-secret.yaml
+  - grafana-secret.yaml

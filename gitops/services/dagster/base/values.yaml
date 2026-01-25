@@ -73,8 +73,6 @@ runLauncher:
           ttlSecondsAfterFinished: 600
 
     celeryK8sRunLauncher:
-      # Same settings for Celery-based execution
+      # When true, the K8s Job/Pod exits with non-zero if the pipeline fails.
+      # Note: runK8sConfig is NOT supported for celeryK8sRunLauncher per schema
       failPodOnRunFailure: true
-      runK8sConfig:
-        jobSpecConfig:
-          ttlSecondsAfterFinished: 600

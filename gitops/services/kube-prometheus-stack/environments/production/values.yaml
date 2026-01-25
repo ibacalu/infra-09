@@ -91,8 +91,8 @@ alertmanager:
     
     route:
       receiver: 'pagerduty-critical'
-      group_by: ['alertname', 'namespace', 'job']
-      group_wait: 30s
+      group_by: ['alertname', 'namespace', 'job', 'label_dagster_job']
+      group_wait: 10s
       group_interval: 5m
       repeat_interval: 4h
       routes:
@@ -112,7 +112,7 @@ alertmanager:
     receivers:
       - name: 'pagerduty-critical'
         pagerduty_configs:
-          - service_key_file: /etc/alertmanager/secrets/pagerduty-key/key
+          - routing_key_file: /etc/alertmanager/secrets/pagerduty-key/key
             severity: critical
             # Use CommonAnnotations/CommonLabels for receiver templates
             description: '{{ .CommonAnnotations.summary }}'
@@ -124,7 +124,7 @@ alertmanager:
       
       - name: 'pagerduty-warning'
         pagerduty_configs:
-          - service_key_file: /etc/alertmanager/secrets/pagerduty-key/key
+          - routing_key_file: /etc/alertmanager/secrets/pagerduty-key/key
             severity: warning
             description: '{{ .CommonAnnotations.summary }}'
       

@@ -4,9 +4,8 @@ provider "aws" {
   region = var.aws_region
 
   # Cross-account role assumption for production account
-  # TFC authenticates to management (520687296415) via OIDC, then assumes this role
+  # TFC authenticates to management via OIDC, then assumes this role
   # Using OrganizationAccountAccessRole which was automatically created by AWS Organizations
-  # Local development uses AWS_PROFILE=hydrosat-prod which already targets the correct account
   assume_role {
     role_arn = "arn:aws:iam::${data.terraform_remote_state.management.outputs.production_account_id}:role/OrganizationAccountAccessRole"
   }

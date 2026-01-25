@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+# [1.4.0](https://github.com/ibacalu/infra-09/compare/v1.3.0...v1.4.0) (2026-01-25)
+
+
+### Bug Fixes
+
+* **alerts:** increase relative time window ([ba3fa47](https://github.com/ibacalu/infra-09/commit/ba3fa479a33380c1f477a263bf5c21aee2b92736))
+* **eso:** use pod identity ([e9e16be](https://github.com/ibacalu/infra-09/commit/e9e16be15a670ff9c37c31b1ca042ff67fa8420a))
+* **ingress:** scale out ([9b18a92](https://github.com/ibacalu/infra-09/commit/9b18a92787e5366b2f267bb0d494f5b1e74993c3))
+* **nginx:** scale-down resources ([19ee54e](https://github.com/ibacalu/infra-09/commit/19ee54e41912b9c1b2a1bc19c5d285ecf85d49a4))
+
+
+### Features
+
+* **dagster:** re-design alerting ([28b11d7](https://github.com/ibacalu/infra-09/commit/28b11d7920e33b78ea42185bb8e259fcacefcbbe))
+* **infra:** cleanup and simplify infrastructure. ([9c35cba](https://github.com/ibacalu/infra-09/commit/9c35cba128f6a3550c0fb5b389cd3149fdb1a7a9))
+
 # [1.3.0](https://github.com/ibacalu/infra-09/compare/v1.2.2...v1.3.0) (2026-01-24)
 
 

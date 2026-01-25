@@ -9,7 +9,11 @@ spec:
   - name: dagster-operations
     rules:
     - alert: DagsterJobFailed
-      expr: kube_job_status_failed{job_name=~"dagster-run-.*"} > 0
+      # Join kube_job_status_failed with kube_job_labels to get Dagster metadata
+      expr: |
+        kube_job_status_failed{job_name=~"dagster-run-.*"} > 0
+        * on(job_name, namespace) group_left(label_dagster_job, label_dagster_run_id, label_dagster_code_location)
+        kube_job_labels{job_name=~"dagster-run-.*"}
       for: 1m
       labels:
         severity: critical

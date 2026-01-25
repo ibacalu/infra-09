@@ -91,7 +91,7 @@ alertmanager:
     
     route:
       receiver: 'pagerduty-critical'
-      group_by: ['alertname', 'namespace', 'job', 'label_dagster_job']
+      group_by: ['alertname', 'namespace', 'job', 'label_dagster_job', 'job_name']
       group_wait: 10s
       group_interval: 5m
       repeat_interval: 4h

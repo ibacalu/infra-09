@@ -1,7 +1,0 @@
-cloudflare:
-  auth:
-    apiToken: "$(secret:argocd/cloudflared-tunnel#token)"
-    accountId: $(secret:argocd/cloudflared-tunnel#accountId)
-
-  tunnel:
-    name: $(configmap:argocd/cluster-config#cluster_name)

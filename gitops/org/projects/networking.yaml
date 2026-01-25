@@ -25,11 +25,3 @@ spec:
       repoURL: https://github.com/ibacalu/infra-09.git
       targetRevision: main
       overlays_path: gitops/services/ingress-nginx/environments
-    - name: traefik
-      repoURL: https://github.com/ibacalu/infra-09.git
-      targetRevision: main
-      overlays_path: gitops/services/traefik/environments
-    - name: cloudflared
-      repoURL: https://github.com/ibacalu/infra-09.git
-      targetRevision: main
-      overlays_path: gitops/services/cloudflared/environments

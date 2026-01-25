@@ -53,8 +53,8 @@ runLauncher:
           nodeSelector:
             kubernetes.io/arch: amd64
         jobSpecConfig:
-          # Auto-delete completed/failed Jobs after 5 minutes for faster alert resolution
-          ttlSecondsAfterFinished: 300
+          # Auto-delete completed/failed Jobs after 1 hour for faster alert resolution
+          ttlSecondsAfterFinished: 3600
 
 # Flower disabled (not needed without Celery)
 flower:

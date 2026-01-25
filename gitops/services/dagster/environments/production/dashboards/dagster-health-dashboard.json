@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 219,
+  "id": null,
   "links": [],
   "panels": [
     {
@@ -141,16 +141,19 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
             "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
             "showPoints": "auto",
-            "spanNulls": false,
+            "spanNulls": 3600000,
             "stacking": {
               "group": "A",
-              "mode": "none"
+              "mode": "normal"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -401,7 +404,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Dagster Health (KSM) - Test 2",
-  "uid": "dagster-health-test-2",
-  "version": 3
+  "title": "Dagster Health (KSM)",
+  "uid": null,
+  "version": 1
 }

@@ -10,9 +10,9 @@ postgresql:
   postgresqlUsername: dagster
   postgresqlDatabase: dagster
 
-# Use external KeyDB as Redis/Celery broker
+# Redis disabled (not needed without Celery)
 redis:
-  enabled: true
+  enabled: false
   internal: false
   host: keydb.keydb.svc.cluster.local
   port: 6379
@@ -41,21 +41,23 @@ dagster-user-deployments:
           cpu: 500m
           memory: 512Mi
 
-# Use Celery executor with Redis as broker
+# Use K8s run launcher
 runLauncher:
-  type: CeleryK8sRunLauncher
+  type: K8sRunLauncher
   config:
-    celeryK8sRunLauncher:
-      nodeSelector:
-        kubernetes.io/arch: amd64
-      workerQueues:
-        - name: "dagster"
-          replicaCount: 2
+    k8sRunLauncher:
+      # Fail the K8s Job/Pod if the pipeline fails (enables KSM alerting)
+      failPodOnRunFailure: true
+      runK8sConfig:
+        podSpecConfig:
           nodeSelector:
             kubernetes.io/arch: amd64
+        jobSpecConfig:
+          # Auto-delete completed/failed Jobs after 5 minutes for faster alert resolution
+          ttlSecondsAfterFinished: 300
 
-# Enable Flower for Celery monitoring
+# Flower disabled (not needed without Celery)
 flower:
-  enabled: true
+  enabled: false
   nodeSelector:
     kubernetes.io/arch: amd64

@@ -6,7 +6,7 @@ metadata:
     argocd.qts.one/sync-wave: "-10"
 spec:
   imageName: ghcr.io/cloudnative-pg/postgresql:16.6
-  instances: 1
+  instances: 1 # Set to 1 for assessment cost efficiency; Production requires 3 (HA)
 
   managed:
     roles:

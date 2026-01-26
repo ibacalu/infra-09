@@ -13,7 +13,7 @@ module "eks" {
 
   # Access
   endpoint_private_access = true
-  endpoint_public_access  = true
+  endpoint_public_access  = true # For real production environment, this should be set to false
 
   authentication_mode                      = "API"
   enable_cluster_creator_admin_permissions = true

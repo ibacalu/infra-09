@@ -6,7 +6,7 @@ serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: $(configmap:argocd/cluster-config#karpenter_iam_role_arn)
 
-replicas: 1 # We only have one EKS managed node group
+replicas: 1 # System node group is scaled to 1, so we cannot run multiple replicas in HA
 
 settings:
   clusterName: $(configmap:argocd/cluster-config#cluster_name)

@@ -43,7 +43,6 @@ flowchart TB
 | **Karpenter** | Node autoscaling | Configurable, fast, supports Spot |
 | **Dagster** | Data orchestration | part of requirements |
 | **CloudNativePG** | PostgreSQL operator | In-cluster DB, no RDS cost |
-| **KeyDB** | Redis-compatible broker | Used for celery job queue, faster than Redis |
 | **ArgoCD** | GitOps | Automatic declarative deployments, drift detection |
 | **Prometheus + Grafana** | Monitoring | Industry standard, rich ecosystem |
 | **fck-nat** | Shared NAT instance | Much cheaper than NAT Gateway |
@@ -227,7 +226,6 @@ Login is currently open (no authentication by default).
 |-----------|-----|
 | Grafana | `https://grafana.<your-cluster-domain>/` |
 | Prometheus | `https://prometheus.<your-cluster-domain>/` |
-| Celery Flower | `https://flower.<your-cluster-domain>/` |
 
 ### Check Alerts
 
@@ -303,6 +301,14 @@ While Dagster was a requirement for this project, it offers significant advantag
 
 - **Cost**: ~$3/month vs $32+/month per NAT Gateway
 - **Sufficient**: Single NAT handles development/small production loads
+
+### Why K8sRunLauncher over Celery/Redis?
+
+Initially I used Celery with Redis(KeyDB) but then decided to switch to K8sRunLauncher instead, further reducing load and costs.
+
+- **Simplicity**: Eliminates the need for maintaining a separate message broker (Redis/KeyDB) and worker queues.
+- **Cost**: Reduces infrastructure footprint by removing stateful services.
+- **Native Integration**: Leverages Kubernetes Jobs directly.
 
 ---
 

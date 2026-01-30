@@ -28,3 +28,20 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "enabled_endpoints" {
+  description = "Map of endpoint names to enable/disable."
+  type = object({
+    s3          = optional(bool, true) # Gateway - FREE
+    dynamodb    = optional(bool, true) # Gateway - FREE
+    ecr_api     = optional(bool, false)
+    ecr_dkr     = optional(bool, false)
+    ec2         = optional(bool, false)
+    sts         = optional(bool, false)
+    logs        = optional(bool, false)
+    ssm         = optional(bool, false)
+    ssmmessages = optional(bool, false)
+    ec2messages = optional(bool, false)
+  })
+  default = {}
+}

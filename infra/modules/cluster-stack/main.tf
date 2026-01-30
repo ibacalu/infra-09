@@ -8,6 +8,9 @@ module "eks" {
   name               = local.name
   kubernetes_version = var.cluster_version
 
+  # Enable selectively if needed: ["api", "audit", "authenticator", "controllerManager", "scheduler"]
+  enabled_log_types = []
+
   vpc_id     = var.vpc_config.vpc_id
   subnet_ids = var.vpc_config.private_subnets # Worker nodes in private subnets
 

@@ -24,6 +24,12 @@ variable "cluster_version" {
   default     = "1.31"
 }
 
+variable "create_kms_key" {
+  description = "Enable customer-managed KMS key for encrypting Kubernetes secrets. Set to true for compliance requirements. When false, AWS-managed keys are still used (free)."
+  type        = bool
+  default     = false
+}
+
 variable "argocd_config" {
   description = "Configuration for ArgoCD bootstrapping (repo url, branch, etc)"
   type = object({

@@ -7,6 +7,7 @@ module "eks" {
 
   name               = local.name
   kubernetes_version = var.cluster_version
+  create_kms_key     = var.create_kms_key
 
   # Enable selectively if needed: ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   enabled_log_types = []
